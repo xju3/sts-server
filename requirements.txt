@@ -1,0 +1,15 @@
+flask
+llama-index
+llama-index-embeddings-clip
+llama-index-embeddings-huggingface
+llama-index-llms-ollama
+llama-index-llms-openai
+llama-index-llms-lmstudio
+llama-index-multi-modal-llms-gemini
+llama-index-multi-modal-llms-ollama
+llama-index-readers-file
+llama-index-vector-stores-qdrant
+matplotlib
+openai
+python-dotenv
+unstructured
