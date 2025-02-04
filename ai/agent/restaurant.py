@@ -6,7 +6,7 @@ from PIL import Image
 import matplotlib.pyplot as plt
 from pydantic import BaseModel
 
-class ChatWithImage:
+class RestaurantAgent:
 
     def __init__(self) -> None:
         pass
@@ -15,9 +15,7 @@ class ChatWithImage:
         image_documents = SimpleDirectoryReader("../files/images").load_data()
         prompt_template_str = """\
         {query_str}
-
         Return the answer as a Pydantic object. The Pydantic schema is given below:
-
         """
         mm_program = MultiModalLLMCompletionProgram.from_defaults(
             output_parser=PydanticOutputParser(Restaurant),

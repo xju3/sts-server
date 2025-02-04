@@ -1,4 +1,4 @@
-from model.restaurant import HttpResult, ErrMsg, Ticket
+from model.http import HttpResult, ErrMsg, Ticket
 from flask import Blueprint, request
 from werkzeug.utils import secure_filename
 import uuid

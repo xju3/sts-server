@@ -2,8 +2,7 @@ from llama_index.multi_modal_llms.gemini import GeminiMultiModal
 from llama_index.core.program import MultiModalLLMCompletionProgram
 from llama_index.core.output_parsers import PydanticOutputParser
 from llama_index.core import SimpleDirectoryReader
-from llama_index.llms.gemini import Gemini
-from model.restaurant import GoogleRestaurant, HandwritingText
+from model.agent import GoogleRestaurant, HandwritingText
 
 from dotenv import load_dotenv
 from enum import StrEnum
@@ -16,10 +15,12 @@ class GeminiModel(StrEnum):
 
 class GeminiLLM():
 
+    gemini = None
+
     def __init__(self, model: GeminiModel) -> None:
         load_dotenv()
         self.api_key = os.getenv("GEMINI_API_KEY")
-        self.llm = GeminiMultiModal(
+        self.gemini = GeminiMultiModal(
             model=model,
             api_key=self.api_key,  # uses GOOGLE_API_KEY env var by default
         )
@@ -44,7 +45,7 @@ class GeminiLLM():
             output_parser=PydanticOutputParser(output_class),
             image_documents=image_documents,
             prompt_template_str=prompt_template_str,
-            multi_modal_llm=self.llm,
+            multi_modal_llm=self.gemini,
             verbose=True,
         )
         response = llm_program()
@@ -61,7 +62,7 @@ class GeminiLLM():
             output_parser=PydanticOutputParser(HandwritingText),
             image_documents=images,
             prompt_template_str=prompt_template_str,
-            multi_modal_llm=self.llm,)
+            multi_modal_llm=self.gemini,)
         resp = llm_program()
         print(resp)
     
@@ -76,4 +77,3 @@ class GeminiLLM():
         ).load_data()
         self.chat_with_images(google_image_documents, prompt_template_str)
 
- 
