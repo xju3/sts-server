@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Flask Chat Room (Client ID Required)</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        #connection-container, #chat-container {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        #messages {
+            height: 400px;
+            overflow-y: auto;
+            border: 1px solid #ccc;
+            padding: 10px;
+        }
+        .disabled {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div id="connection-container">
+        <h2>Connect to Chat</h2>
+        <input type="text" id="client-id-input" placeholder="Enter Client ID">
+        <button onclick="connectToServer()">Connect</button>
+    </div>
+
+    <div id="chat-container" class="disabled">
+        <div id="connection-status">Not Connected</div>
+        
+        <div id="room-controls">
+            <input type="text" id="room-input" placeholder="Room Name">
+            <button onclick="createRoom()">Create Room</button>
+            <button onclick="joinRoom()">Join Room</button>
+            <button onclick="listRooms()">List Rooms</button>
+        </div>
+        
+        <div id="current-room">No Room Selected</div>
+        
+        <div id="messages"></div>
+        
+        <div id="message-controls">
+            <input type="text" id="message-input" placeholder="Type your message">
+            <button onclick="sendMessage()">Send</button>
+        </div>
+    </div>
+
+    <script>
+        let socket = null;
+        let currentClientId = null;
+        let currentRoom = null;
+
+        function connectToServer() {
+            const clientIdInput = document.getElementById('client-id-input');
+            const clientId = clientIdInput.value.trim();
+
+            if (!clientId) {
+                alert('Please enter a Client ID');
+                return;
+            }
+
+            // Connect to the WebSocket server
+            socket = io('http://localhost:3300');
+
+            // Connection verification events
+            socket.on('connect', () => {
+                // Immediately attempt to verify client ID
+                socket.emit('verify_client', { client_id: clientId });
+            });
+
+            socket.on('connection_verified', (data) => {
+                currentClientId = data.client_id;
+                
+                // Show chat container, hide connection container
+                document.getElementById('connection-container').classList.add('disabled');
+                document.getElementById('chat-container').classList.remove('disabled');
+                
+                document.getElementById('connection-status').textContent = 
+                    `Connected as Client ID: ${currentClientId}`;
+                
+                console.log(data.message);
+            });
+
+            socket.on('connection_error', (data) => {
+                alert(data.message);
+                socket.disconnect();
+            });
+
+            // Room joining events
+            socket.on('room_joined', (data) => {
+                currentRoom = data.room;
+                document.getElementById('current-room').textContent = 
+                    `Current Room: ${currentRoom}`;
+                addSystemMessage(data.message);
+            });
+
+            // Message handling
+            socket.on('room_message', (data) => {
+                addMessage(data.client_id, data.message);
+            });
+
+            // Room listing
+            socket.on('room_list', (data) => {
+                const roomList = data.rooms.map(room => 
+                    `Room: ${room.room}, Members: ${room.members}`
+                ).join('\n');
+                alert('Available Rooms:\n' + roomList);
+            });
+
+            // Error handling
+            socket.on('error', (data) => {
+                alert(data.message);
+            });
+        }
+
+        function createRoom() {
+            if (!socket) return;
+
+            const roomInput = document.getElementById('room-input');
+            const roomName = roomInput.value.trim() || null;
+            
+            socket.emit('create_room', { 
+                room: roomName
+            });
+            
+            roomInput.value = '';
+        }
+
+        function joinRoom() {
+            if (!socket) return;
+
+            const roomInput = document.getElementById('room-input');
+            const roomName = roomInput.value.trim();
+            
+            if (roomName) {
+                socket.emit('join_room', { 
+                    room: roomName
+                });
+                
+                roomInput.value = '';
+            } else {
+                alert('Please enter a room name');
+            }
+        }
+
+        function listRooms() {
+            if (!socket) return;
+            socket.emit('list_rooms');
+        }
+
+        function sendMessage() {
+            if (!socket || !currentRoom) {
+                alert('Please join a room first');
+                return;
+            }
+
+            const messageInput = document.getElementById('message-input');
+            const message = messageInput.value.trim();
+            
+            if (message) {
+                socket.emit('send_message', {
+                    room: currentRoom,
+                    message: message
+                });
+                
+                messageInput.value = '';
+            }
+        }
+
+        function addMessage(clientId, message) {
+            const messagesDiv = document.getElementById('messages');
+            const messageElement = document.createElement('div');
+            messageElement.textContent = `${clientId}: ${message}`;
+            messagesDiv.appendChild(messageElement);
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        }
+
+        function addSystemMessage(message) {
+            const messagesDiv = document.getElementById('messages');
+            const messageElement = document.createElement('div');
+            messageElement.textContent = `[SYSTEM] ${message}`;
+            messageElement.style.color = 'green';
+            messagesDiv.appendChild(messageElement);
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        }
+    </script>
+</body>
+</html>

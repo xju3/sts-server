@@ -1,4 +1,6 @@
+dataclass_wizard
 flask
+Flask-SocketIO
 llama-index
 llama-index-embeddings-clip
 llama-index-embeddings-huggingface
@@ -13,3 +15,7 @@ matplotlib
 openai
 python-dotenv
 unstructured
+python-engineio 
+python-socketio
+eventlet
+minio
