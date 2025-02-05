@@ -27,4 +27,3 @@ if __name__ == '__main__':
     # llm = GeminiLLM(GeminiModel.GEMINI_2_0_FLASH)
     # agent = AssignmentAgent(llm.gemini)
     # agent.check_assignments('/Users/tju/Workspace/projects/sts/server/files/uploads')
-

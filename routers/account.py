@@ -1,10 +1,7 @@
-
-
-from flask import Blueprint, render_template, request
+from flask import Blueprint, request
 from domain.service.account_service import AccountService 
 from model.http import HttpResult
 from routers.common import success, failure
-import json
 
 
 account_service = AccountService()

@@ -64,15 +64,12 @@ class AssignmentAgent:
     def __init__(self, llm) -> None:
         self.llm = llm
 
-    def check_assignments(self, request_id, directory : str = None, files : List = None):
+    def check_assignments(self, request_id, directory : str):
         images = None
 
         # read files from directory
         if (directory != None):
             images = SimpleDirectoryReader(directory).load_data()
-
-        if (files != None and len(files) > 0):
-            imaegs = SimpleDirectoryReader(input_files=files).load_data()
 
         if images is None or len(images) == 0: 
             return

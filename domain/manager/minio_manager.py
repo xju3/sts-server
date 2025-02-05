@@ -2,6 +2,7 @@
 from flask import Blueprint, request
 from minio import Minio
 from dotenv import load_dotenv
+from typing import List
 import os
 
 load_dotenv()
@@ -17,5 +18,5 @@ class MinioManager:
     def gen_access_key(self, object_name):
         return client.presigned_get_object(bucket_name=bucket_name, object_name=object_name)
     
-    def get_files(self, directory):
+    def get_files(self, directory) -> List[str]:
         return client.list_objects(bucket_name=bucket_name, prefix=directory)

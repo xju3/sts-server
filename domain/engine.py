@@ -10,3 +10,4 @@ load_dotenv()
 db_engine = create_engine(f"postgresql+pg8000://{os.getenv('PG_USER')}:{os.getenv('PG_PASSWORD')}@{os.getenv('PG_HOST')}/{os.getenv('PG_DATABASE')}",
                         isolation_level="REPEATABLE READ",
                         poolclass = StaticPool,)
+session = Session(db_engine)
