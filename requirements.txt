@@ -13,7 +13,9 @@ llama-index-readers-file
 llama-index-vector-stores-qdrant
 matplotlib
 openai
+sqlalchemy
 python-dotenv
+pg8000
 unstructured
 python-engineio 
 python-socketio

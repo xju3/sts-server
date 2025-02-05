@@ -18,6 +18,7 @@ class SocketManager:
         
         # Register socket event handlers
         self.register_handlers()
+
     
     def register_handlers(self):
         """
@@ -29,7 +30,36 @@ class SocketManager:
         self.socketio.on_event('send_message', self.send_message)
         self.socketio.on_event('list_rooms', self.list_rooms)
         self.socketio.on_event('disconnect', self.handle_disconnect)
+        self.socketio.on_event('on_review_finished', self.handle_disconnect)
     
+
+    def on_review_finished(self, data):
+        """ send the review messages to students """
+        client_id = data.get("client_id")
+        sid = self.find_sid_by_client_id(client_id)
+        if sid is None:
+            return
+
+        review_info = data.get("review_info")
+        pass
+
+
+    def find_sid_by_client_id(self, client_id: str) -> str:
+        """
+        Finds the socket ID (sid) associated with a given client ID.
+
+        Args:
+            client_id: The ID of the client.
+
+        Returns:
+            The socket ID (sid) if found, otherwise None.
+        """
+        for sid, c_id in self.connected_clients.items():
+            if c_id == client_id:
+                return sid
+        return None
+
+
     def verify_client(self, data):
         """
         Verify client connection by checking client_id

@@ -10,6 +10,15 @@ class ErrMsg(JSONWizard):
     def __init__(self, _code: str = None, _msg : str = None) -> None:
         self.code = _code
         self.msg = _msg
+    
+    @classmethod
+    def sucess(cls):
+        return cls('0', 'success')
+
+    @classmethod
+    def failure(cls):
+        return cls('1', 'failure')
+    
 
 @dataclass
 class HttpResult(JSONWizard):
@@ -17,9 +26,18 @@ class HttpResult(JSONWizard):
     err: ErrMsg
     data: any
 
-    def __init__(self, _err : ErrMsg = None, _data : any = None) -> None:
-        self.err = _err
-        self.data = _data
+    def __init__(self, err : ErrMsg, data: any):
+        self.err = err
+        self.data = data
 
+    @classmethod
+    def success(cls, data = None):
+        return cls(data=data, err= ErrMsg.sucess())
+    
+    @classmethod
+    def failure(cls):
+        return cls(err= ErrMsg.failure())
+    
+    
 
 

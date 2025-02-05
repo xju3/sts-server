@@ -21,11 +21,11 @@ class Assignment(BaseModel):
     ans_ai: str
     conclusion: int
     reason: str
-    knowledges: str
     solution: str
+    knowledges: str
     suggestions: str
 
-class AssignmentChecking(BaseModel):
+class ReviewInfo(BaseModel):
     summary: str
     problems: List[Assignment]
     total: int
