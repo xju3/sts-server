@@ -16,8 +16,8 @@ class ErrMsg(JSONWizard):
         return cls('0', 'success')
 
     @classmethod
-    def failure(cls):
-        return cls('1', 'failure')
+    def failure(cls, message = None):
+        return cls('1', message)
     
 
 @dataclass
@@ -35,8 +35,8 @@ class HttpResult(JSONWizard):
         return cls(data=data, err= ErrMsg.sucess())
     
     @classmethod
-    def failure(cls):
-        return cls(err= ErrMsg.failure())
+    def failure(cls, message):
+        return cls(err= ErrMsg.failure(message))
     
     
 

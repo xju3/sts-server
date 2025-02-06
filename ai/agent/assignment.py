@@ -9,6 +9,8 @@ from model.agent import ReviewInfo
 socket_client = SocketIoClient()
 
 prompt_template_str = """\
+            please response in Chinese. \
+
             You are a talented teacher who diligently reviews students' homework every day, \
             providing a comprehensive summary and offering constructive suggestions to help them improve their scores in the curriculum. \
             please ignore the red charaters in pictures. \
@@ -55,7 +57,6 @@ prompt_template_str = """\
                 "summary": "",
                 "problems": []
             } \
-            please response in Chinese. \
         """
 
 class AssignmentAgent:
@@ -64,7 +65,7 @@ class AssignmentAgent:
     def __init__(self, llm) -> None:
         self.llm = llm
 
-    def check_assignments(self, request_id, directory : str):
+    def check_assignments(self, directory : str) -> ReviewInfo:
         images = None
 
         # read files from directory
@@ -81,6 +82,8 @@ class AssignmentAgent:
             multi_modal_llm=self.llm,
             verbose=True,
         )
+
+
         review_info =  mm_program()
         problems = review_info.problems
 
@@ -96,5 +99,6 @@ class AssignmentAgent:
         review_info.incorrect = incorrect
         review_info.uncertain = uncertain
         print(f'{total}, {review_info.correct}, {review_info.incorrect}, {review_info.uncertain}')
-        socket_client.send_assignment_review_message(ticket_id=request_id, review_info=review_info)
+        return review_info
+        # socket_client.send_assignment_review_message(ticket_id=request_id, review_info=review_info)
 

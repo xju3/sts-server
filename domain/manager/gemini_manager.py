@@ -13,35 +13,38 @@ import shutil
 
 load_dotenv()
 LOCAL_IMAGE_ROOT_DIR = os.getenv("IMAGE_TMP_DIR")
-MINIO_HOST=os.getenv("MINIO_HOST")
-MINIO_URL = f'http://{MINIO_HOST}/assignments/'
+MINIO_END_POINT=os.getenv("MINIO_END_POINT")
+MINIO_URL = f'http://{MINIO_END_POINT}/assignments/'
+
 review_manager = ReviewManager()
-gemini = GeminiLLM(GeminiModel.GEMINI_2_0_FLASH)
-agent = AssignmentAgent(gemini)
+llm = GeminiLLM(GeminiModel.GEMINI_2_0_FLASH)
+agent = AssignmentAgent(llm.gemini)
 
 
 class GeminiManager:
 
-    def review(self, minio_directory: str,  files: List[str]):
+    def review(self, request_id: str,  directory: str,  files: List[str]):
         """ review assignments and save the results to database"""
 
         """将MINIO上的文件下载到本地"""
-        path = f'{LOCAL_IMAGE_ROOT_DIR}/{minio_directory}'
+        path = f'{LOCAL_IMAGE_ROOT_DIR}/{directory}'
         if not os.path.exists(path=path):
             os.makedirs(path)
         self.download_files(path, files)
 
-        review_info = agent.check_assignments(directory=path)
+        review_info = agent.check_assignments(directory=directory)
         if review_info is None:
             return
-        review_ai, details = review_manager.create_ai_review_info(minio_directory, review_info)
+        review_ai, details = review_manager.create_ai_review_info(request_id, review_info)
         if review_ai is None or details is None:
             return
-        session.add_all(review_ai, details)
+        session.add(review_ai)
+        for detail in details:
+            session.add(detail)
         session.commit()
 
         try:
-            shutil.rmtree(minio_directory)
+            shutil.rmtree(directory)
         except OSError as e:
             print(f"Error deleting directory {path}: {e}")
 

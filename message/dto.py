@@ -6,8 +6,7 @@ from datetime import datetime
 @dataclass
 class SingleValue(JSONWizard):
     """ticket id after uploading image successfully."""
-    def __init__(self, content: str = None):
-        self.content= content
+    content: str
 
 @dataclass
 class StudentInfo(JSONWizard):

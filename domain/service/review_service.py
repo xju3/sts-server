@@ -17,23 +17,16 @@ gemini_manager = GeminiManager()
 
 class ReviewService:
 
-    def create(self, student_id, directory):
-        request_id = uuid.uuid4()
-        request = ReviewRequest(student_id=student_id, directory=directory)
+    def create(self, student_id, request_id):
+        request = ReviewRequest(student_id=student_id, id = request_id)
         session.add(request)
         session.commit()
-        multiprocessing.Process(self.call_ai, args=(request_id, directory))
+        multiprocessing.Process(self.call_ai, args=(f'{student_id/request_id}',))
     
-    def call_ai(self, request_id, directory):
-        request = review_manager.get_request_by_id(request_id)
-        if request_id is None:
-            return
-        directory = f'{request.student_id}/{request.id}/'
+    def call_ai(self, directory,):
         minio_objects = minio_manager.get_files(directory)
-        if len(minio_objects) == 0:
-            return
         files = list(map(lambda obj: obj.object_name, minio_objects))
-        gemini_manager.review(directory, files)
+        gemini_manager.review(directory=directory, files =files)
 
     
     def get_student_review_requests(self, student_id):

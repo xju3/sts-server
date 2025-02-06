@@ -5,11 +5,11 @@ from domain.service.review_service import ReviewService
 review_router = Blueprint('review_router', __name__)
 review_service = ReviewService()
 
-@review_router.route('/review/request/create', methods=['POST'])
-def create():
-    student_id = request.form.get("student_id")
-    directory = request.form.get("directory")
-    review_service.create(student_id, directory)
+
+
+@review_router.put('/review/request/create/<string:studentId>/<string:requestId>')
+def create(studentId, requestId):
+    review_service.create(studentId, requestId)
     return success()
 
 @review_router.route('/review/request/get', methods=['POST'])

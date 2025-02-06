@@ -8,5 +8,5 @@ def success(obj = None):
     return json.dumps(HttpResult.success(obj).to_dict())
 
 
-def failure():
-    return json.dumps(HttpResult.fa)
+def failure(message):
+    return json.dumps(HttpResult.failure(message))

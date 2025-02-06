@@ -16,7 +16,7 @@ bucket_name = 'assignments'
 class MinioManager:
 
     def gen_access_key(self, object_name):
-        return client.presigned_get_object(bucket_name=bucket_name, object_name=object_name)
+        return client.presigned_put_object(bucket_name=bucket_name, object_name=object_name)
     
     def get_files(self, directory) -> List[str]:
         return client.list_objects(bucket_name=bucket_name, prefix=directory)

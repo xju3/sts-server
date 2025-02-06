@@ -8,9 +8,8 @@ from dataclasses import dataclass
 class ReviewRequest(Base):
     __tablename__ = "review_request"
     student_id: Mapped[str] = mapped_column(nullable=True,)
-    directory: Mapped[str] = mapped_column(nullable=True,)
-    trans_time: Mapped[datetime] = mapped_column(nullable=True,)
-    status: Mapped[int] = mapped_column(nullable=True,)
+    trans_time: Mapped[datetime] = mapped_column(nullable=True, default=datetime.now())
+    status: Mapped[int] = mapped_column(nullable=True, default=0)
 
 @dataclass
 class ReviewAI(Base):
@@ -33,6 +32,7 @@ class ReviewDetail(Base):
     ans_student: Mapped[str] = mapped_column(nullable=True,)
     ans_ai: Mapped[str] = mapped_column(nullable=True,)
     conclusion: Mapped[int] = mapped_column(nullable=True,)
+    reason: Mapped[str] = mapped_column(nullable=True,)
     solution: Mapped[str] = mapped_column(nullable=True,)
     knowledges: Mapped[str] = mapped_column(nullable=True,)
     suggestions: Mapped[str] = mapped_column(nullable=True,)

@@ -9,7 +9,7 @@ bucket_name = "assignments"
 minio_manager = MinioManager()
 @minio_router.route('/minio/get_access_key', methods=['POST'])
 def gen_access_key():
-    object_name = request.form.get("objectName")
+    data = request.get_json()
+    object_name = data["objectName"]
     url = minio_manager.gen_access_key(object_name)
-    data = SingleValue(content=url)
-    return success(data)
+    return success(obj=SingleValue(content=url))
