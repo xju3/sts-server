@@ -16,14 +16,14 @@ class Answer(BaseModel):
 
 class Assignment(BaseModel):
     """the response text which is returned by llm"""
-    no: str
-    ans_student: str
-    ans_ai: str
-    conclusion: int
-    reason: str
-    solution: str
-    knowledges: str
-    suggestions: str
+    no: str | None
+    ans_student: str | None
+    ans_ai: str | None
+    conclusion: int | None
+    reason: str  | None
+    solution: str | None
+    knowledge: str | None
+    suggestions: str | None
 
 class ReviewInfo(BaseModel):
     summary: str

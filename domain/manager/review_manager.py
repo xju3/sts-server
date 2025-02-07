@@ -9,13 +9,16 @@ from typing import List
 class ReviewManager:
 
     def get_student_review_requests(self, student_id) -> List[ReviewRequest]:
-        return session.execute(select(ReviewRequest).where(ReviewRequest.student_id == student_id)).fetchall()
+        return session.query(ReviewRequest).filter(ReviewRequest.student_id == student_id).all()
 
     def get_ai_review_by_request_id(self, request_id) -> ReviewAI:
-        return session.execute(select(ReviewAI).where(ReviewAI.request_id == request_id)).scalar_one_or_none()
+        return session.query(ReviewAI).filter(ReviewAI.request_id == request_id).one_or_none()
+    
+    def get_ai_review_details(self, ai_review_id) -> List[ReviewDetail]:
+        return session.query(ReviewDetail).filter(ReviewDetail.ai_review_id==ai_review_id).all()
 
     def get_request_by_id(self, request_id) -> ReviewRequest:
-        return session.execute(select(ReviewRequest).where(ReviewRequest.id == request_id)).scalar_one_or_none()
+        return session.query(ReviewRequest).filter(ReviewRequest.id == request_id).one_or_none()
 
     def create_ai_review_info(self, request_id: str, review_info):
         review_ai_id = generate_uuid()
@@ -28,14 +31,14 @@ class ReviewManager:
                              uncertain=review_info.uncertain)
         details = []
         for problem in review_info.problems:
-            review_detail = ReviewDetail(request_ai_id=review_ai_id,
+            review_detail = ReviewDetail(ai_review_id=review_ai_id,
                                          no=problem.no,
                                          ans_student=problem.ans_student,
                                          ans_ai=problem.ans_ai,
                                          conclusion=problem.conclusion,
                                          reason=problem.reason,
-                                         knowledges=problem.knowledges,
+                                         knowledge=problem.knowledges,
                                          solution=problem.solution,
-                                         suggestions=problem.suggestions)
+                                         suggestion=problem.suggestions)
             details.append(review_detail)
         return review_ai, details

@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Mapped
 from sqlalchemy.orm import mapped_column
-from domain.model.common import Base
+from domain.model.common import Base, generate_uuid
 from datetime import datetime
 from dataclasses import dataclass
 
@@ -17,8 +17,8 @@ class ReviewAI(Base):
     request_id: Mapped[str] = mapped_column(nullable=True,)
     start_time: Mapped[datetime] = mapped_column(nullable=True,)
     end_time: Mapped[datetime] = mapped_column(nullable=True,)
+    subject: Mapped[str] = mapped_column(nullable=True,)
     total: Mapped[int] = mapped_column(nullable=True,)
-    subject: Mapped[int] = mapped_column(nullable=True,)
     correct: Mapped[int] = mapped_column(nullable=True,)
     incorrect: Mapped[int] = mapped_column(nullable=True,)
     uncertain: Mapped[int] = mapped_column(nullable=True,)
@@ -27,13 +27,13 @@ class ReviewAI(Base):
 @dataclass
 class ReviewDetail(Base):
     __tablename__ = "review_detail"
-    request_ai_id: Mapped[str] = mapped_column(nullable=True,)
+    ai_review_id: Mapped[str] = mapped_column(nullable=True,)
     no: Mapped[str] = mapped_column(nullable=True,)
     ans_student: Mapped[str] = mapped_column(nullable=True,)
     ans_ai: Mapped[str] = mapped_column(nullable=True,)
     conclusion: Mapped[int] = mapped_column(nullable=True,)
     reason: Mapped[str] = mapped_column(nullable=True,)
     solution: Mapped[str] = mapped_column(nullable=True,)
-    knowledges: Mapped[str] = mapped_column(nullable=True,)
-    suggestions: Mapped[str] = mapped_column(nullable=True,)
+    knowledge: Mapped[str] = mapped_column(nullable=True,)
+    suggestion: Mapped[str] = mapped_column(nullable=True,)
 

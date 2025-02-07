@@ -1,6 +1,6 @@
 
 from sqlalchemy import create_engine
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, sessionmaker
 from dotenv import load_dotenv
 import os
 from sqlalchemy.pool import StaticPool
@@ -10,4 +10,5 @@ load_dotenv()
 db_engine = create_engine(f"postgresql+pg8000://{os.getenv('PG_USER')}:{os.getenv('PG_PASSWORD')}@{os.getenv('PG_HOST')}/{os.getenv('PG_DATABASE')}",
                         isolation_level="REPEATABLE READ",
                         poolclass = StaticPool,)
-session = Session(db_engine)
+Session = sessionmaker(bind=db_engine)
+session = Session()

@@ -32,7 +32,7 @@ class GeminiManager:
             os.makedirs(path)
         self.download_files(path, files)
 
-        review_info = agent.check_assignments(directory=directory)
+        review_info = agent.check_assignments_gemini(directory=path)
         if review_info is None:
             return
         review_ai, details = review_manager.create_ai_review_info(request_id, review_info)

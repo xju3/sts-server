@@ -10,7 +10,7 @@ review_service = ReviewService()
 @review_router.put('/review/request/create/<string:studentId>/<string:requestId>')
 def create(studentId, requestId):
     review_service.create(studentId, requestId)
-    return success()
+    return success([])
 
 @review_router.route('/review/request/get', methods=['POST'])
 def get_requests():
@@ -18,7 +18,7 @@ def get_requests():
     data = review_service.get_student_review_requests(student_id)
     return success(data)
 
-@review_router.route('/review/ai/list/<student_id>', methods=['GET'])
+@review_router.put('/review/ai/list/<student_id>')
 def get_ai_review_list(student_id):
     data = review_service.get_ai_review_list(student_id)
     return success(data)

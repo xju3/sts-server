@@ -1,6 +1,7 @@
 import os
 from ai.llm.gemini import GeminiLLM, GeminiModel
 from ai.agent.assignment import AssignmentAgent
+from ai.llm.deepseek import DeepseekChatBot
 from flask import Flask 
 from flask_socketio import SocketIO
 from message.manager import SocketManager
@@ -27,5 +28,7 @@ socket_manager = SocketManager(socketio)
 if __name__ == '__main__':
     socketio.run(app, host='0.0.0.0', port=3300, debug=True)
     # llm = GeminiLLM(GeminiModel.GEMINI_2_0_FLASH)
-    # agent = AssignmentAgent(llm.gemini)
-    # agent.check_assignments('/var/tmp/1')
+    # llm = DeepseekChatBot()
+    # llm.chat("hello")
+    # agent = AssignmentAgent(llm.deepSeek)
+    # agent.check_assignments_gemini('/Users/tju/Workspace/projects/sts/server/files/uploads')

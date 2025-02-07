@@ -47,7 +47,7 @@ def upload_file() -> HttpResult:
                 result.err.msg = 'file type not allowed'
         if len(uploaded_files) > 0:
             # create a new process to handle assignment review.
-            multiprocessing.Process(assignment_agent.check_assignments, args=(_ticket_id, uploaded_files))
+            multiprocessing.Process(assignment_agent.check_assignments_gemini, args=(_ticket_id, uploaded_files))
     
     if result.err.code == '0': 
         result.data = Ticket(client_id)

@@ -21,14 +21,14 @@ prompt_template_str = """\
                 "ans_ai": "",
                 "conclusion": "", 
                 "reason": "", 
-                "knowledges": "",
+                "knowledge": "",
                 "solution": "",
-                "suggestions": ""
+                "suggestion": ""
             }\
 
             For each item, \
             You should extract the question number into a no field and the student's response into a ans_student field in JSON format, \
-            You should also concisely list the key knowledge points related to the problem in a knowledges field in JSON format. \
+            You should also concisely list the key knowledge points related to the problem in a knowledge field in JSON format. \
             after you read each problem carefully, \
             you must give your answer based on the meaning of the question, \
             which conforms to common sense in a ans_ai field in JSON format, don't try to copy the student's answer.\
@@ -46,7 +46,7 @@ prompt_template_str = """\
                         If the student’s answer is incorrect, \
                 you need to analyze the possible reasons behind the wrong answer, and include this in a reason field in JSON format. 
                 Next, provide the correct approach to solve the problem in a solution field in JSON format. \
-                Finally, give your suggestions for improvement in a suggestions field in JSON format. \
+                Finally, give your suggestion for improvement in a suggestion field in JSON format. \
 
             There are multiple pictures to review at once. \
             The file name of each picture corresponds to the order of the homework content, so please check them sequentially. \
@@ -65,7 +65,7 @@ class AssignmentAgent:
     def __init__(self, llm) -> None:
         self.llm = llm
 
-    def check_assignments(self, directory : str) -> ReviewInfo:
+    def check_assignments_gemini(self, directory : str) -> ReviewInfo:
         images = None
 
         # read files from directory

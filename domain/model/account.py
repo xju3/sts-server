@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Mapped
 from sqlalchemy import Column, String
 from sqlalchemy.orm import mapped_column
-from domain.model.common import Base
+from domain.model.common import Base, generate_uuid
 from datetime import datetime
 from dataclasses import dataclass 
 from datetime import datetime

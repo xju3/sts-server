@@ -7,4 +7,4 @@ def generate_uuid():
     return str(uuid.uuid1())
 
 class Base(DeclarativeBase):
-    id: Mapped[str] = mapped_column(primary_key=True, default=generate_uuid)
+    id = Column(primary_key=True, default=generate_uuid)

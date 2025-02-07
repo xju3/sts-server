@@ -34,7 +34,11 @@ class AccountService:
         student_info_list = []
         for student in students:
             person = account_manager.get_person_by_id(student.person_id)
-            info = StudentInfo(id=student.id, name=person.full_name, school=student.school_name, grade=student.grade)
+            info = StudentInfo(id=student.id, 
+                               name=person.full_name, 
+                               school=student.school_name, 
+                               grade=student.grade, 
+                               parentId=parent.id)
             student_info_list.append(info) 
 
         return AccountInfo(id=account.id, parent_id=account.parent_id, parent_name=p1.full_name, students=student_info_list)
