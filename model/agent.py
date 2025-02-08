@@ -14,7 +14,7 @@ class Answer(BaseModel):
     student: str
     ai: str
 
-class Assignment(BaseModel):
+class AiReviewProblem(BaseModel):
     """the response text which is returned by llm"""
     no: str | None
     ans_student: str | None
@@ -23,15 +23,16 @@ class Assignment(BaseModel):
     reason: str  | None
     solution: str | None
     knowledge: str | None
-    suggestions: str | None
+    suggestion: str | None
 
-class ReviewInfo(BaseModel):
+class AiReviewInfo(BaseModel):
     summary: str
-    problems: List[Assignment]
+    problems: List[AiReviewProblem]
     total: int
     correct: int
     incorrect: int
     uncertain: int
+    subject: str | None
 
 class GoogleRestaurant(BaseModel):
     """Data model for a Google Restaurant."""

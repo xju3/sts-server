@@ -2,6 +2,7 @@
 from domain.model.review import ReviewAI, ReviewRequest, ReviewDetail
 from domain.engine import session 
 from domain.model.common import generate_uuid
+from model.agent import AiReviewInfo
 from sqlalchemy import select, desc
 from typing import List
 
@@ -9,7 +10,7 @@ from typing import List
 class ReviewManager:
 
     def get_student_review_requests(self, student_id) -> List[ReviewRequest]:
-        return session.query(ReviewRequest).filter(ReviewRequest.student_id == student_id).all()
+        return session.query(ReviewRequest).filter(ReviewRequest.student_id == student_id).order_by(desc(ReviewRequest.trans_time)).all()
 
     def get_ai_review_by_request_id(self, request_id) -> ReviewAI:
         return session.query(ReviewAI).filter(ReviewAI.request_id == request_id).one_or_none()
@@ -20,25 +21,26 @@ class ReviewManager:
     def get_request_by_id(self, request_id) -> ReviewRequest:
         return session.query(ReviewRequest).filter(ReviewRequest.id == request_id).one_or_none()
 
-    def create_ai_review_info(self, request_id: str, review_info):
+    def create_ai_review_info(self, request_id: str, agent_review_info : AiReviewInfo):
         review_ai_id = generate_uuid()
         review_ai = ReviewAI(id=review_ai_id, 
                              request_id=request_id,
-                             summary=review_info.summary,
-                             total=review_info.total,
-                             correct=review_info.correct,
-                             incorrect=review_info.incorrect,
-                             uncertain=review_info.uncertain)
+                             subject=agent_review_info.subject,
+                             summary=agent_review_info.summary,
+                             total=agent_review_info.total,
+                             correct=agent_review_info.correct,
+                             incorrect=agent_review_info.incorrect,
+                             uncertain=agent_review_info.uncertain)
         details = []
-        for problem in review_info.problems:
+        for problem in agent_review_info.problems:
             review_detail = ReviewDetail(ai_review_id=review_ai_id,
                                          no=problem.no,
                                          ans_student=problem.ans_student,
                                          ans_ai=problem.ans_ai,
                                          conclusion=problem.conclusion,
                                          reason=problem.reason,
-                                         knowledge=problem.knowledges,
+                                         knowledge=problem.knowledge,
                                          solution=problem.solution,
-                                         suggestion=problem.suggestions)
+                                         suggestion=problem.suggestion)
             details.append(review_detail)
         return review_ai, details

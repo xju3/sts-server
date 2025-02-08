@@ -9,6 +9,7 @@ from urllib.request import urlopen
 from dotenv import load_dotenv
 import os
 import shutil
+from datetime import datetime
 
 
 load_dotenv()
@@ -32,12 +33,16 @@ class GeminiManager:
             os.makedirs(path)
         self.download_files(path, files)
 
+        start_time = datetime.now()
         review_info = agent.check_assignments_gemini(directory=path)
         if review_info is None:
             return
+        end_time = datetime.now()
         review_ai, details = review_manager.create_ai_review_info(request_id, review_info)
         if review_ai is None or details is None:
             return
+        review_ai.start_time = start_time
+        review_ai.end_time = end_time
         session.add(review_ai)
         for detail in details:
             session.add(detail)
