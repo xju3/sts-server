@@ -15,9 +15,9 @@ matplotlib
 openai
 sqlalchemy
 python-dotenv
-psycopg2brew install libpq
+psycopg2
 unstructured
-python-engineio 
+python-engineio
 python-socketio
 eventlet
 minio
