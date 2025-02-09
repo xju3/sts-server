@@ -21,9 +21,9 @@ def get_requests():
 @review_router.put('/review/ai/list/<student_id>')
 def get_ai_review_list(student_id):
     data = review_service.get_ai_review_list(student_id)
-    return success(data)
+    return success(data )
 
 @review_router.route('/review/ai/<ai_review_id>', methods=['GET'])
-def get_ai_review(ai_review_id):
-    data = review_service.get_ai_review(ai_review_id)
+def get_ai_review_details(ai_review_id):
+    data = review_service.get_review_details(ai_review_id)
     return success(data)

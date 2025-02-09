@@ -1,7 +1,4 @@
 import os
-from ai.llm.gemini import GeminiLLM, GeminiModel
-from ai.agent.assignment import AssignmentAgent
-from ai.llm.deepseek import DeepseekChatBot
 from flask import Flask 
 from flask_socketio import SocketIO
 from message.manager import SocketManager

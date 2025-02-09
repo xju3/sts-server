@@ -36,7 +36,7 @@ class ReviewService:
     def get_ai_review_list(self, student_id) -> List[ReviewInfo]:
         requests = review_manager.get_student_review_requests(student_id)
         if len(requests) == 0:
-            return None
+            return []
         
         results = []
         for request in requests:
@@ -54,6 +54,7 @@ class ReviewService:
             review.details = self.get_review_details(review.id)
             results.append(review)
         return results
+
     def get_review_details(self, ai_review_id) -> List[ReviewDetailInfo]: 
         details = []
         list = review_manager.get_ai_review_details(ai_review_id)
