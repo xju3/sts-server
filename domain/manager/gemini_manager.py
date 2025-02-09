@@ -32,7 +32,8 @@ class GeminiManager:
         """ review assignments and save the results to database"""
 
         local_path = f'{LOCAL_IMAGE_ROOT_DIR}/{directory}'
-        session = sessionmaker(bind=engine)
+        Session = sessionmaker(bind=engine)
+        session = Session()
         try:
             """将MINIO上的文件下载到本地"""
             if not os.path.exists(path=local_path):
