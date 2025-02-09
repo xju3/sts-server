@@ -19,8 +19,6 @@ class AccountManager:
     def get_person_by_id(self, person_id) -> Person:
         with SessionLocal() as session:
             return session.query(Person).filter(Person.id == person_id).one_or_none()
- 
-    
 
     def get_student_by_id(self, student_id) -> Student:
         with SessionLocal() as session:
@@ -29,6 +27,3 @@ class AccountManager:
     def get_students_by_parent_id(self, parent_id) -> list[Student]:
         with SessionLocal() as session:
             return session.query(Student).filter(Student.parent_id == parent_id).all()
-
-
-

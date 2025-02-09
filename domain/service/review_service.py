@@ -8,7 +8,7 @@ from message.dto import ReviewInfo, ReviewDetailInfo
 from domain.manager.minio_manager import MinioManager
 from typing import List
 import logging, sys
-from multiprocessing import Process
+import threading
 
 logging.basicConfig(level=logging.DEBUG, stream=sys.stdout)
 logger = logging.getLogger()
@@ -25,7 +25,7 @@ class ReviewService:
             request = ReviewRequest(student_id=student_id, id = request_id)
             session.add(request)
             session.commit()
-            p = Process(target=self.call_ai, args=(request_id, f'{student_id}/{request_id}',))
+            p = threading.Thread(target=self.call_ai, args=(request_id, f'{student_id}/{request_id}',))
             p.start()
         except Exception as e:
             logger.error(e)

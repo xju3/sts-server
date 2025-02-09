@@ -48,8 +48,8 @@ class GeminiManager:
         review_ai.start_time = start_time
         review_ai.end_time = end_time
         try:
-            ReviewSession = sessionmaker(bind=engine)
-            with ReviewSession() as session:
+            Session = sessionmaker(bind=engine, autoflush=False,)
+            with Session() as session:
                 session.add(review_ai)
                 for detail in details:
                     session.add(detail)
