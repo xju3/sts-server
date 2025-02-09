@@ -7,7 +7,7 @@ from sqlalchemy.pool import StaticPool
 
 
 load_dotenv()
-url = f"postgresql+pg8000://{os.getenv('PG_USER')}:{os.getenv('PG_PASSWORD')}@{os.getenv('PG_HOST')}/{os.getenv('PG_DATABASE')}";
+url = f"postgresql+psycopg2://{os.getenv('PG_USER')}:{os.getenv('PG_PASSWORD')}@{os.getenv('PG_HOST')}/{os.getenv('PG_DATABASE')}";
 engine = create_engine(
     url,
     pool_size=20,  # Maximum number of connections in the pool (default is 5)
