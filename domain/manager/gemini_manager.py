@@ -17,7 +17,7 @@ LOCAL_IMAGE_ROOT_DIR = os.getenv("IMAGE_TMP_DIR")
 MINIO_END_POINT=os.getenv("MINIO_END_POINT")
 MINIO_URL = f'http://{MINIO_END_POINT}/assignments/'
 
-logging.basicConfig(level=logging.DEBUG, stream=sys.stdout)
+logging.basicConfig(level=logging.DEBUG, stream=sys.stdout, filename='gemini_manager.log')
 logger = logging.getLogger()
 
 
@@ -41,7 +41,8 @@ class GeminiManager:
             self.download_files(local_path, files)
 
             start_time = datetime.now()
-            review_info = agent.check_assignments_gemini(directory=local_path)
+            print(local_path)
+            review_info = agent.check_assignments_gemini(directory=directory)
             if review_info is None:
                 return
             end_time = datetime.now()
@@ -55,7 +56,7 @@ class GeminiManager:
                 session.add(detail)
             session.commit()
         except Exception (e):
-            logging.error(e)
+            logger.error(e)
         finally:
             session.close()
 
