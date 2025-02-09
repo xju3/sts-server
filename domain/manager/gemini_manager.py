@@ -41,7 +41,6 @@ class GeminiManager:
         review_info = agent.check_assignments_gemini(directory=local_path)
         if review_info is None:
             return
-        ReviewSession = sessionmaker(bind=engine)
         end_time = datetime.now()
         review_ai, details = review_manager.create_ai_review_info(request_id, review_info)
         if review_ai is None or details is None:
@@ -49,6 +48,7 @@ class GeminiManager:
         review_ai.start_time = start_time
         review_ai.end_time = end_time
         try:
+            ReviewSession = sessionmaker(bind=engine)
             with ReviewSession() as session:
                 session.add(review_ai)
                 for detail in details:
