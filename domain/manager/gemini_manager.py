@@ -32,25 +32,24 @@ class GeminiManager:
         """ review assignments and save the results to database"""
 
         local_path = f'{LOCAL_IMAGE_ROOT_DIR}/{minio_directory}'
+        """将MINIO上的文件下载到本地"""
+        if not os.path.exists(path=local_path):
+            os.makedirs(local_path)
+        self.download_files(local_path, files)
+        start_time = datetime.now()
+        print(local_path)
+        review_info = agent.check_assignments_gemini(directory=local_path)
+        if review_info is None:
+            return
         ReviewSession = sessionmaker(bind=engine)
+        end_time = datetime.now()
+        review_ai, details = review_manager.create_ai_review_info(request_id, review_info)
+        if review_ai is None or details is None:
+            return
+        review_ai.start_time = start_time
+        review_ai.end_time = end_time
         try:
-            """将MINIO上的文件下载到本地"""
             with ReviewSession() as session:
-                if not os.path.exists(path=local_path):
-                    os.makedirs(local_path)
-                self.download_files(local_path, files)
-
-                start_time = datetime.now()
-                print(local_path)
-                review_info = agent.check_assignments_gemini(directory=local_path)
-                if review_info is None:
-                    return
-                end_time = datetime.now()
-                review_ai, details = review_manager.create_ai_review_info(request_id, review_info)
-                if review_ai is None or details is None:
-                    return
-                review_ai.start_time = start_time
-                review_ai.end_time = end_time
                 session.add(review_ai)
                 for detail in details:
                     session.add(detail)
