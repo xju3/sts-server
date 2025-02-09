@@ -19,7 +19,8 @@ gemini_manager = GeminiManager()
 class ReviewService:
 
     def create(self, student_id, request_id):
-        session = sessionmaker(bind=engine)
+        Session = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+        session = Session()
         try:
             request = ReviewRequest(student_id=student_id, id = request_id)
             session.add(request)

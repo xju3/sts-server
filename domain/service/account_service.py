@@ -15,7 +15,8 @@ class AccountService:
     def create_account(self, mobile, school, grade, parent_name, student_name):
         '''创建新的账号'''
         try:
-            session = sessionmaker(autocommit=False, autoflush=False, bind=engine);
+            Session = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+            session = Session()
             person_parent_id = generate_uuid()
             person_student_id = generate_uuid()
             parent_person = Person(id= person_parent_id, full_name=parent_name)
