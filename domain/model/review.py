@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Mapped
 from sqlalchemy.orm import mapped_column
-from domain.model.common import Base, generate_uuid
+from domain.model.common import Base 
 from datetime import datetime
 from dataclasses import dataclass
 

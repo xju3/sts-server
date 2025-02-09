@@ -7,8 +7,15 @@ from sqlalchemy.pool import StaticPool
 
 
 load_dotenv()
-db_engine = create_engine(f"postgresql+pg8000://{os.getenv('PG_USER')}:{os.getenv('PG_PASSWORD')}@{os.getenv('PG_HOST')}/{os.getenv('PG_DATABASE')}",
-                        isolation_level="REPEATABLE READ",
-                        poolclass = StaticPool,)
-Session = sessionmaker(bind=db_engine)
-session = Session()
+url = f"postgresql+pg8000://{os.getenv('PG_USER')}:{os.getenv('PG_PASSWORD')}@{os.getenv('PG_HOST')}/{os.getenv('PG_DATABASE')}";
+engine = create_engine(
+    url,
+    pool_size=20,  # Maximum number of connections in the pool (default is 5)
+    max_overflow=10,  # Maximum number of connections that can be created beyond pool_size (default is 10)
+    pool_recycle=3600,  # Recycle connections after 1 hour (in seconds). Helps prevent stale connections
+    pool_timeout=30, # Timeout for getting a connection from the pool (default is 30 seconds)
+    echo=False # Set to True for debugging. Prints SQL statements.
+)
+
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+session = SessionLocal()

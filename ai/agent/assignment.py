@@ -1,10 +1,8 @@
-from typing import List
 from llama_index.core import SimpleDirectoryReader
 from llama_index.core.program import MultiModalLLMCompletionProgram
 from llama_index.core.output_parsers import PydanticOutputParser
 from message.client import SocketIoClient
 from model.agent import AiReviewInfo
-from datetime import datetime
 
 
 socket_client = SocketIoClient()

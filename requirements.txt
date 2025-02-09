@@ -21,3 +21,4 @@ python-engineio
 python-socketio
 eventlet
 minio
+gunicorn

@@ -1,13 +1,13 @@
 
 from typing import List
 from domain.manager.review_manager import ReviewManager
-from domain.model.review import ReviewAI, ReviewDetail
-from domain.engine import session
+from domain.engine import engine
+from sqlalchemy.orm import sessionmaker
 from ai.llm.gemini import GeminiLLM, GeminiModel
 from ai.agent.assignment import AssignmentAgent
 from urllib.request import urlopen
 from dotenv import load_dotenv
-import os
+import os, logging
 import shutil
 from datetime import datetime
 
@@ -16,6 +16,10 @@ load_dotenv()
 LOCAL_IMAGE_ROOT_DIR = os.getenv("IMAGE_TMP_DIR")
 MINIO_END_POINT=os.getenv("MINIO_END_POINT")
 MINIO_URL = f'http://{MINIO_END_POINT}/assignments/'
+
+logging.basicConfig(level=logging.DEBUG, stream=sys.stdout)
+logger = logging.getLogger()
+
 
 review_manager = ReviewManager()
 llm = GeminiLLM(GeminiModel.GEMINI_2_0_FLASH)
@@ -27,31 +31,38 @@ class GeminiManager:
     def review(self, request_id: str,  directory: str,  files: List[str]):
         """ review assignments and save the results to database"""
 
-        """将MINIO上的文件下载到本地"""
-        path = f'{LOCAL_IMAGE_ROOT_DIR}/{directory}'
-        if not os.path.exists(path=path):
-            os.makedirs(path)
-        self.download_files(path, files)
+        local_path = f'{LOCAL_IMAGE_ROOT_DIR}/{directory}'
+        session = sessionmaker(bind=engine)
+        try:
+            """将MINIO上的文件下载到本地"""
+            if not os.path.exists(path=local_path):
+                os.makedirs(local_path)
+            self.download_files(local_path, files)
 
-        start_time = datetime.now()
-        review_info = agent.check_assignments_gemini(directory=path)
-        if review_info is None:
-            return
-        end_time = datetime.now()
-        review_ai, details = review_manager.create_ai_review_info(request_id, review_info)
-        if review_ai is None or details is None:
-            return
-        review_ai.start_time = start_time
-        review_ai.end_time = end_time
-        session.add(review_ai)
-        for detail in details:
-            session.add(detail)
-        session.commit()
+            start_time = datetime.now()
+            review_info = agent.check_assignments_gemini(directory=local_path)
+            if review_info is None:
+                return
+            end_time = datetime.now()
+            review_ai, details = review_manager.create_ai_review_info(request_id, review_info)
+            if review_ai is None or details is None:
+                return
+            review_ai.start_time = start_time
+            review_ai.end_time = end_time
+            session.add(review_ai)
+            for detail in details:
+                session.add(detail)
+            session.commit()
+        except Exception (e):
+            logging.error(e)
+        finally:
+            session.close()
 
         try:
-            shutil.rmtree(directory)
+            shutil.rmtree(local_path)
+            logger.debug(f"{local_path} deleted.")
         except OSError as e:
-            print(f"Error deleting directory {path}: {e}")
+            print(f"Error deleting directory {local_path}: {e}")
 
 
     def download_files(self, path,  files: List[str]):

@@ -2,13 +2,11 @@
 
 from llama_index.llms.ollama import Ollama
 from enum import StrEnum
-from pathlib import Path
 from llama_index.core import SimpleDirectoryReader
 from llama_index.core.program import MultiModalLLMCompletionProgram
 from llama_index.multi_modal_llms.ollama import OllamaMultiModal
 from llama_index.core.output_parsers import PydanticOutputParser
-from model.http import GoogleRestaurant
-import os
+from model.agent import GoogleRestaurant
 
 
 

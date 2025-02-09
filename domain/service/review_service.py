@@ -1,16 +1,17 @@
 
 from domain.model.review import ReviewRequest
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import sessionmaker
 from domain.engine import db_engine
 from domain.manager.review_manager import ReviewManager
 from domain.manager.gemini_manager import GeminiManager
 from message.dto import ReviewInfo, ReviewDetailInfo
 from domain.manager.minio_manager import MinioManager
 from typing import List
+import logging, sys
 from multiprocessing import Process
-import uuid
 
-session  = Session(db_engine)
+logging.basicConfig(level=logging.DEBUG, stream=sys.stdout)
+logger = logging.getLogger()
 review_manager = ReviewManager()
 minio_manager = MinioManager()
 gemini_manager = GeminiManager()
@@ -18,11 +19,19 @@ gemini_manager = GeminiManager()
 class ReviewService:
 
     def create(self, student_id, request_id):
-        request = ReviewRequest(student_id=student_id, id = request_id)
-        session.add(request)
-        session.commit()
-        p = Process(target=self.call_ai, args=(request_id, f'{student_id}/{request_id}',))
-        p.start()
+        session = sessionmaker(bind=db_engine)
+        try:
+            request = ReviewRequest(student_id=student_id, id = request_id)
+            session.add(request)
+            session.commit()
+            p = Process(target=self.call_ai, args=(request_id, f'{student_id}/{request_id}',))
+            p.start()
+        except Exception as e:
+            logger.error(e)
+            session.rollback()  
+        finally:
+            session.close() 
+            
     
     def call_ai(self, request_id, directory,):
         minio_objects = minio_manager.get_files(directory+"/")

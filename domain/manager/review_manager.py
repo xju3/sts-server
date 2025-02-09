@@ -1,13 +1,12 @@
 
 from domain.model.review import ReviewAI, ReviewRequest, ReviewDetail
-from domain.engine import db_engine
+from domain.engine import session
 from domain.model.common import generate_uuid
 from model.agent import AiReviewInfo
 from sqlalchemy import desc
-from sqlalchemy.orm import create_session
 from typing import List
 
-session = create_session(db_engine)
+# session = create_session(db_engine)
 
 class ReviewManager:
 

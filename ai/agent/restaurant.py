@@ -1,9 +1,6 @@
-from pathlib import Path
 from llama_index.core import SimpleDirectoryReader
 from llama_index.core.program import MultiModalLLMCompletionProgram
 from llama_index.core.output_parsers import PydanticOutputParser
-from PIL import Image
-import matplotlib.pyplot as plt
 from pydantic import BaseModel
 
 class RestaurantAgent:
