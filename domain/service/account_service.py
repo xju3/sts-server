@@ -2,7 +2,7 @@
 from domain.model.account import Parent, Person, Student, Account 
 from sqlalchemy.orm import sessionmaker
 import logging, sys
-from domain.engine import db_engine
+from domain.engine import engine
 from domain.model.common import generate_uuid
 from domain.manager.account_manager import AccountManager
 from message.dto import AccountInfo, StudentInfo
@@ -12,13 +12,10 @@ logging.basicConfig(level=logging.DEBUG, stream=sys.stdout)
 logger = logging.getLogger()
 
 class AccountService:
-
-    logger = logging.Logger()
-
     def create_account(self, mobile, school, grade, parent_name, student_name):
         '''创建新的账号'''
         try:
-            session = sessionmaker(autocommit=False, autoflush=False, bind=db_engine);
+            session = sessionmaker(autocommit=False, autoflush=False, bind=engine);
             person_parent_id = generate_uuid()
             person_student_id = generate_uuid()
             parent_person = Person(id= person_parent_id, full_name=parent_name)

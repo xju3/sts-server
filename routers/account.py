@@ -1,12 +1,8 @@
 from flask import Blueprint, request
 from domain.service.account_service import AccountService 
-from model.http import HttpResult
 from routers.common import success, failure
-import json
-
 
 account_service = AccountService()
-
 account_router = Blueprint('account_router', __name__)
 
 @account_router.route("/account/create",  methods=['POST'])

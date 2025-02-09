@@ -1,7 +1,7 @@
 
 from domain.model.review import ReviewRequest
 from sqlalchemy.orm import sessionmaker
-from domain.engine import db_engine
+from domain.engine import engine 
 from domain.manager.review_manager import ReviewManager
 from domain.manager.gemini_manager import GeminiManager
 from message.dto import ReviewInfo, ReviewDetailInfo
@@ -19,7 +19,7 @@ gemini_manager = GeminiManager()
 class ReviewService:
 
     def create(self, student_id, request_id):
-        session = sessionmaker(bind=db_engine)
+        session = sessionmaker(bind=engine)
         try:
             request = ReviewRequest(student_id=student_id, id = request_id)
             session.add(request)

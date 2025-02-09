@@ -7,7 +7,7 @@ from ai.llm.gemini import GeminiLLM, GeminiModel
 from ai.agent.assignment import AssignmentAgent
 from urllib.request import urlopen
 from dotenv import load_dotenv
-import os, logging
+import os, logging, sys
 import shutil
 from datetime import datetime
 
