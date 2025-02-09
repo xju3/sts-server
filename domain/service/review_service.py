@@ -37,7 +37,7 @@ class ReviewService:
     def call_ai(self, request_id, directory,):
         minio_objects = minio_manager.get_files(directory+"/")
         files = list(map(lambda obj: obj.object_name, minio_objects))
-        gemini_manager.review(request_id=request_id, directory=directory, files =files)
+        gemini_manager.review(request_id=request_id, minio_directory=directory, files =files)
 
 
     def get_student_review_requests(self, student_id):

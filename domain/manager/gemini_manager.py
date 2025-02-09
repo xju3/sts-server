@@ -28,10 +28,10 @@ agent = AssignmentAgent(llm.gemini)
 
 class GeminiManager:
 
-    def review(self, request_id: str,  directory: str,  files: List[str]):
+    def review(self, request_id: str,  minio_directory: str,  files: List[str]):
         """ review assignments and save the results to database"""
 
-        local_path = f'{LOCAL_IMAGE_ROOT_DIR}/{directory}'
+        local_path = f'{LOCAL_IMAGE_ROOT_DIR}/{minio_directory}'
         Session = sessionmaker(bind=engine)
         session = Session()
         try:
@@ -42,7 +42,7 @@ class GeminiManager:
 
             start_time = datetime.now()
             print(local_path)
-            review_info = agent.check_assignments_gemini(directory=directory)
+            review_info = agent.check_assignments_gemini(directory=local_path)
             if review_info is None:
                 return
             end_time = datetime.now()
@@ -56,7 +56,7 @@ class GeminiManager:
                 session.add(detail)
             session.commit()
         except Exception (e):
-            logger.error(e)
+            print(e)
         finally:
             session.close()
 
