@@ -28,16 +28,14 @@ def create_account():
     data = account_service.login(mobile=mobile)
     return success(data)
 
-@account_router.route("/account/login",  methods=['POST'])
+@account_router.post("/account/login")
 def login():
-    data = request.get_json()
-    data = account_service.login(mobile=data['mobile'], access_code=None)
+    body = request.get_json()
+    account = body['account']
+    data = account_service.login(mobile=account, access_code=None)
     return success(data)
 
-@account_router.route("/account/test",  methods=['POST'])
-def test():
-    return success()
-
-
-
-
+@account_router.put("/account/schools/<float:lat>/<float:lng>")
+def get_schools(lat, lng):
+    data = account_service.get_schools(lat, lng)
+    return success(data)

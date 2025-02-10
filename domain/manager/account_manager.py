@@ -1,10 +1,16 @@
 
-from domain.model.account import Account,Parent, Student, Person
+from domain.model.account import Account,Parent, Student, Person, School
 from domain.engine import SessionLocal
 from sqlalchemy import select, desc
 
 
 class AccountManager:
+
+    def get_school_by_name(self, school_name) -> Account:
+        '''(str ) -> Account'''
+        with SessionLocal() as session:
+            return session.query(School).filter(School.full_name == school_name).one_or_none()
+
 
     def get_account_by_mobile(self, mobile) -> Account:
         '''(str ) -> Account'''

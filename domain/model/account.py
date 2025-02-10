@@ -28,6 +28,10 @@ class School(Base):
     region_id: Mapped[str] = mapped_column(nullable=True,)
     short_name: Mapped[str] = mapped_column(nullable=True,)
     full_name: Mapped[str] = mapped_column(nullable=True,)
+    phone : Mapped[str] = mapped_column(nullable=True,)
+    lat : Mapped[float] = mapped_column(nullable=True,)
+    lng : Mapped[float] = mapped_column(nullable=True,)
+    addr: Mapped[str] = mapped_column(nullable=True,)
 
 @dataclass
 class Person(Base):

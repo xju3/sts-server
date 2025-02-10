@@ -1,11 +1,13 @@
 
-from domain.model.account import Parent, Person, Student, Account 
+from domain.model.account import Parent, Person, Student, Account, School
 from sqlalchemy.orm import sessionmaker
 import logging, sys
 from domain.engine import engine
 from domain.model.common import generate_uuid
 from domain.manager.account_manager import AccountManager
+from domain.manager.location_manager import baidu_get_schools_nearby
 from message.dto import AccountInfo, StudentInfo
+import uuid
 
 account_manager = AccountManager()
 logging.basicConfig(level=logging.DEBUG, stream=sys.stdout)
@@ -36,7 +38,7 @@ class AccountService:
         '''用手机号登录，暂不需要密码'''
         account = account_manager.get_account_by_mobile(mobile)
         if account is None:
-            return
+            return {}
         parent = account_manager.get_parent_by_id(account.parent_id)
         p1 = account_manager.get_person_by_id(parent.person_id)
         students = account_manager.get_students_by_parent_id(account.parent_id)
@@ -53,4 +55,34 @@ class AccountService:
 
         return AccountInfo(id=account.id, parent_id=account.parent_id, parent_name=p1.full_name, students=student_info_list)
 
+
+    def get_schools(self, latitude, longitude):
+        results = baidu_get_schools_nearby(latitude, longitude, 10)
+        if len(results) == 0:
+            return []
         
+        new_schools = []
+        for item in results:
+            school = account_manager.get_school_by_name(item['name'])
+            if school is None:
+                id = uuid.uuid1()
+                data = School(id=id, full_name=item['name'], 
+                    lat=item['lat'],
+                    lng=item['lng'],
+                              phone=item['phone'], addr=item['addr'])
+                item['fullName'] = item['name']
+                new_schools.append(data)
+                item['id'] = id
+            else:
+                item['id'] = school.id
+                item['fullName'] = school.full_name
+
+            try:
+                Session = sessionmaker(autocommit=False, autoflush=False, bind=engine) 
+                with Session() as session:
+                    session.add_all(new_schools)
+                    session.commit()
+                    session.close()
+            except Exception as e: 
+                print(e)
+        return results
