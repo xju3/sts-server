@@ -29,6 +29,8 @@ class ReviewAI(Base):
 class ReviewDetail(Base):
     __tablename__ = "review_detail"
     ai_review_id: Mapped[str] = mapped_column(nullable=True,)
+    question: Mapped[str] = mapped_column(nullable=True,)
+    options: Mapped[str] = mapped_column(nullable=True,)
     no: Mapped[str] = mapped_column(nullable=True,)
     ans_student: Mapped[str] = mapped_column(nullable=True,)
     ans_ai: Mapped[str] = mapped_column(nullable=True,)

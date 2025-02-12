@@ -80,8 +80,13 @@ class ReviewService:
         details = []
         list = review_manager.get_ai_review_details(ai_review_id)
         for item in list:
-            detail = ReviewDetailInfo_O(id=item.id, aiReviewId=item.ai_review_id, no=item.no, ansAi=item.ans_ai,
-                                      ansStudent=item.ans_student, conclusion=item.conclusion, solution=item.solution,
-                                      knowledge=item.knowledge, suggestion=item.suggestion)
+            detail = ReviewDetailInfo_O(id=item.id, 
+                                        aiReviewId=item.ai_review_id, 
+                                        question=item.question,
+                                        options=item.options,
+                                        no=item.no, ansAi=item.ans_ai, 
+                                        ansStudent=item.ans_student, 
+                                        conclusion=item.conclusion, solution=item.solution, 
+                                        knowledge=item.knowledge, suggestion=item.suggestion)
             details.append(detail)
         return details

@@ -38,8 +38,15 @@ class ReviewManager:
                              uncertain=agent_review_info.uncertain)
         details = []
         for problem in agent_review_info.problems:
+            if (problem.options is not None):
+                options = ','.join(problem.options)
+            else:
+                options = None
+        
             review_detail = ReviewDetail(ai_review_id=review_ai_id,
                                          no=problem.no,
+                                         question=problem.question,
+                                         options=options,
                                          ans_student=problem.ans_student,
                                          ans_ai=problem.ans_ai,
                                          conclusion=problem.conclusion,

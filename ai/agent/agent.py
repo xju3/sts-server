@@ -6,9 +6,13 @@ class Answer(BaseModel):
     student: str
     ai: str
 
+
+
 class AiReviewProblem(BaseModel):
     """the response text which is returned by llm"""
     no: str | None
+    question: str | None
+    options: List[str] | None
     ans_student: str | None
     ans_ai: str | None
     conclusion: int | None

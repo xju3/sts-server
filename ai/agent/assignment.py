@@ -13,7 +13,8 @@ prompt_template_str = """\
             here is a json exmaple that is the data item you will use for each problem review\
             {
                 "no": "", 
-                "problem" "",
+                "question": "",
+                "options": [],
                 "ans_student": "",
                 "ans_ai": "",
                 "conclusion": "", 
@@ -24,17 +25,21 @@ prompt_template_str = """\
                 "level": 1
             }\
             no, 是指题目的编号
-            problem: 是题目的内容 
+            question: 题目的内容
+            options: 如果是选择题目，需要将题目中提供可选项加到options中
             ans_student, 指学生的答案, 一般情况下，学生答案为手写字体，在识别过程中需要注意其准确性
+            conlusion:
+                判断学生的答案是否正确，取值范围为(0, 1, -1), 0表示学生未作答，或你也无法判断是否正确， 1表示正确，-1表示错误.
+                在遇到选择题时，你需要了解答案代号，如A,B,C,D所代表的含义,后再作正确与否判断
+                学生的答案为手写字体，请仔细识别其内容，特别是对于最终答案的判断，如有些学生将最终答案写在"答"后面.
             an_ai, 是你给出的答案.
-            conlusion,判断学生的答案是否正确，取值范围为(0, 1, -1), 0表示学生未作答，或你也无法判断是否正确， 1表示正确，-1表示错误.
             reason，若学生答案错误，需要分析错误产生的原因
             knowlege: 指本题涉及到的知识点，如果有多个知识点，用逗号隔开
             solution: 你的详细解题过程，如果有推导过程，需要一步一步地推导出答案, 注意根据需要增加换行符
             suggestion: 若学生作答错误，需要提醒学生的一些注意事项
             level: 指题目难度，注意这个难度只是针对此其知识点构建的题目产生的难度，通常这些知识点会对应一定的年级，如小学3年级，中学8年级(初中2年级)前
-            有时候你会遇到没有标准答案的实践性问题，如一个一分钟可以步行多远，如果答案是10公里，明显不太可能，所以在分析此类问题答案时，需要结合生活，工作中的实际情况，用客观合理的答案去判断学生作答正确与否.
 
+            有时候你会遇到没有标准答案的实践性问题，如一个一分钟可以步行多远，如果答案是10公里，明显不太可能，所以在分析此类问题答案时，需要结合生活，工作中的实际情况，用客观合理的答案去判断学生作答正确与否.
             {
                 "subject": "",
                 "summary": "",
@@ -60,7 +65,6 @@ class AssignmentAgent:
         images = SimpleDirectoryReader(directory).load_data()
         if images is None or len(images) == 0: 
             return
-        
         
         mm_program = MultiModalLLMCompletionProgram.from_defaults(
             output_parser=PydanticOutputParser(AiReviewInfo),

@@ -78,6 +78,8 @@ class ReviewDetailInfo_O(JSONWizard):
     id: str | None
     aiReviewId : str | None
     no: str | None
+    question: str | None
+    options: str | None
     ansStudent: str | None
     ansAi: str | None
     conclusion: int | None

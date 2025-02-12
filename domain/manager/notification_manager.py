@@ -15,6 +15,8 @@ _jpush = jpush.JPush(app_key, app_secret)
 
 def send_notification(items: List[PushMessage]):
     for item in items:
+        if item.platform != 'android':
+            continue
         push = _jpush.create_push()
         push.audience = {"registration_id": [item.target]}
         push.platform = item.platform
