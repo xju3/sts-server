@@ -1,13 +1,5 @@
 from pydantic import BaseModel
 from typing import List
-from PIL import Image
-import matplotlib.pyplot as plt
-from datetime import datetime
-
-import json
-from typing import Protocol
-from dataclasses import dataclass
-from dataclass_wizard import JSONWizard
 
 
 class Answer(BaseModel):

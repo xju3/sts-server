@@ -22,3 +22,4 @@ python-socketio
 eventlet
 minio
 gunicorn
+jpush

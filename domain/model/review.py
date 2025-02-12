@@ -8,6 +8,7 @@ from dataclasses import dataclass
 class ReviewRequest(Base):
     __tablename__ = "review_request"
     student_id: Mapped[str] = mapped_column(nullable=True,)
+    images: Mapped[int] = mapped_column(nullable=True,)
     trans_time: Mapped[datetime] = mapped_column(nullable=True, default=datetime.now())
     status: Mapped[int] = mapped_column(nullable=True, default=0)
 

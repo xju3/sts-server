@@ -6,7 +6,7 @@ from llama_index.core import SimpleDirectoryReader
 from llama_index.core.program import MultiModalLLMCompletionProgram
 from llama_index.multi_modal_llms.ollama import OllamaMultiModal
 from llama_index.core.output_parsers import PydanticOutputParser
-from model.agent import GoogleRestaurant
+from ai.agent.agent import GoogleRestaurant
 
 
 

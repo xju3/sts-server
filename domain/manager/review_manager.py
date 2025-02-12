@@ -2,7 +2,7 @@
 from domain.model.review import ReviewAI, ReviewRequest, ReviewDetail
 from domain.engine import SessionLocal
 from domain.model.common import generate_uuid
-from model.agent import AiReviewInfo
+from ai.agent.agent import AiReviewInfo
 from sqlalchemy import desc
 from typing import List
 

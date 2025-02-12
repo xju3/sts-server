@@ -2,7 +2,7 @@ from llama_index.multi_modal_llms.gemini import GeminiMultiModal
 from llama_index.core.program import MultiModalLLMCompletionProgram
 from llama_index.core.output_parsers import PydanticOutputParser
 from llama_index.core import SimpleDirectoryReader
-from model.agent import GoogleRestaurant, HandwritingText
+from ai.agent.agent import GoogleRestaurant, HandwritingText
 
 from dotenv import load_dotenv
 from enum import StrEnum

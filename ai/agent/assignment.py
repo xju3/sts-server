@@ -1,11 +1,9 @@
 from llama_index.core import SimpleDirectoryReader
 from llama_index.core.program import MultiModalLLMCompletionProgram
 from llama_index.core.output_parsers import PydanticOutputParser
-from message.client import SocketIoClient
-from model.agent import AiReviewInfo
+from ai.agent.agent import AiReviewInfo
 
 
-socket_client = SocketIoClient()
 
 prompt_template_str = """\
             please response in Chinese. \
@@ -58,12 +56,8 @@ class AssignmentAgent:
         self.llm = llm
 
     def check_assignments_gemini(self, directory : str) -> AiReviewInfo:
-        images = None
-
         # read files from directory
-        if (directory != None):
-            images = SimpleDirectoryReader(directory).load_data()
-
+        images = SimpleDirectoryReader(directory).load_data()
         if images is None or len(images) == 0: 
             return
         
@@ -76,8 +70,7 @@ class AssignmentAgent:
             verbose=True,
         )
 
-
-        agent_review_info =  mm_program()
+        agent_review_info = mm_program()
         problems = agent_review_info.problems
 
         total = len(problems)

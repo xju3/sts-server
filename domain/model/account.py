@@ -1,7 +1,6 @@
 from sqlalchemy.orm import Mapped
-from sqlalchemy import Column, String
 from sqlalchemy.orm import mapped_column
-from domain.model.common import Base, generate_uuid
+from domain.model.common import Base
 from datetime import datetime
 from dataclasses import dataclass 
 from datetime import datetime
@@ -47,7 +46,20 @@ class Parent(Base):
     """家长信息"""
     __tablename__ = "parent"
     person_id: Mapped[str] = mapped_column(nullable=True,)
- 
+    account_id: Mapped[str] = mapped_column(nullable=True,)
+    account_name: Mapped[str] = mapped_column(nullable=True, unique=True)
+    password: Mapped[str] = mapped_column(nullable=True,)
+    notification_id: Mapped[str] = mapped_column(nullable=True)
+    device_id: Mapped[str] = mapped_column(nullable=True)
+
+class Login(Base):
+    """用户登录信息"""
+    __tablename__ = "login"
+    parent_id: Mapped[str] = mapped_column(nullable=True,)
+    device_id: Mapped[str] = mapped_column(nullable=True,)
+    notification_id: Mapped[str] = mapped_column(nullable=True,)
+    trans_time: Mapped[datetime] = mapped_column(nullable=True,)
+
 @dataclass
 class Student(Base):
     """学生信息"""
@@ -56,12 +68,10 @@ class Student(Base):
     grade: Mapped[int] = mapped_column(nullable=True,)
     school_id: Mapped[str] = mapped_column(nullable=True,)
     school_name: Mapped[str] = mapped_column(nullable=True,)
-    parent_id: Mapped[str] = mapped_column(nullable=True,)
+    account_id: Mapped[str] = mapped_column(nullable=True,)
     access_code: Mapped[str] = mapped_column(nullable=True,)
 
 @dataclass
 class Account(Base):
     __tablename__ = "account"
-    mobile: Mapped[str] = mapped_column(nullable=True,unique=True)
-    parent_id: Mapped[str] = mapped_column(nullable=True,)
     register_time: Mapped[datetime] = mapped_column(nullable=True,default=datetime.now())

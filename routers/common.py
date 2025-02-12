@@ -1,5 +1,5 @@
 
-from model.http import HttpResult
+from routers.model.output import HttpResult
 import json
 
 def success(obj = None):
@@ -9,4 +9,4 @@ def success(obj = None):
 
 
 def failure(message):
-    return json.dumps(HttpResult.failure(message))
+    return json.dumps(HttpResult.failure(message).to_dict())
