@@ -8,11 +8,11 @@ review_service = ReviewService()
 
 
 @review_router.put('/review/request/create/<string:studentId>/<string:requestId>/<int:images>')
-def create(studentId, requestId):
+def create(studentId, requestId, images):
     """
         Function: 创建作业检查请求
     """
-    review_service.create(studentId, requestId)
+    review_service.create(studentId, requestId, images)
     return success([])
 
 @review_router.route('/review/request/get', methods=['POST'])
