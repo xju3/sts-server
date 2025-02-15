@@ -1,23 +1,26 @@
 
-from domain.model.review import ReviewRequest, ReviewDetail, Assignment
+from domain.model.review import ReviewRequest, ReviewDetail, Assignment, Question
 from sqlalchemy.orm import sessionmaker
-from utils.common import get_week_ids 
-from ai.agent.assignment import AssignmentAgent
+from utils.common import get_week_ids, dict_2_str
 from domain.engine import engine 
+from llama_index.core.base.llms.types import CompletionResponse
 from domain.manager.task.queue import QueueTaskManager, GenerationTask, TaskStatus
 from domain.manager.review_manager import ReviewManager
 from domain.manager.gemini_manager import GeminiManager
+from domain.manager.account_manager import AccountManager
 from utils.minio import get_minio_files, get_minio_file_url
 from routers.model.output import ReviewInfo_O, ReviewDetailInfo_O, ReviewRequest_O
 from typing import List
 import logging, sys
-import time
 import threading
+import json
+from datetime import datetime
 
 logging.basicConfig(level=logging.DEBUG, stream=sys.stdout)
 logger = logging.getLogger()
 review_manager = ReviewManager()
 gemini_manager = GeminiManager()
+account_manager = AccountManager()
 
 
 
@@ -108,31 +111,44 @@ class ReviewService:
         return details
     
     def gen_weekly_assignments(self):
-        generator = QueueTaskManager()
         year_id, week_id = get_week_ids(0)
         Session = sessionmaker(engine)
-        task_ids = []
         with Session() as session:
-            list = session.query(Assignment).filter(Assignment.year_id == year_id, Assignment.week_id == week_id).all()
-            for item in list:
+            list = session.query(Assignment).filter(Assignment.year_id == year_id, 
+                                                    Assignment.week_id == week_id, 
+                                                    Assignment.status == 0).all()
+            logger.debug(f"total: {len(list)}")
+            for assignment in list:
                 # 异步方式（使用回调）
-                task_id = generator.add_generation_task(
-                    subject=item.subject,
-                    student_id=item.student_id,
-                    knowledge_points=item.points.split(","),
-                    callback=self.handle_task_result  # 使用回调函数
-                )
-                task_ids.append(task_id)
-                print(f"Async task started: {task_id}")
-        generator.start_worker()
-    # 使用示例
-    def handle_task_result(self, task: GenerationTask):
-        """处理任务结果的回调函数"""
-        if task.status == TaskStatus.COMPLETED:
-            print(f"Task {task.task_id} completed successfully!")
-        else:
-            print(f"Task {task.task_id} failed: {task.error_message}")
-
+                student = account_manager.get_student_by_id(assignment.student_id)
+                val = gemini_manager.assignment(student.grade, assignment.subject, assignment.points)
+                val = val.text.replace("```json", "").replace("```", "")
+                data = json.loads(val)
+                for item in data:
+                    no = item.get('no', '')
+                    question = item.get('question', '')
+                    options = item.get('options', '')
+                    ansawer = item.get('ans', '')
+                    points = item.get('points', '')
+                    solution = item.get('solution', '')
+                    question = Question(
+                        assignment_id = assignment.id,
+                        no = no,
+                        question = question,
+                        points = points,
+                        options = options,
+                        ans_student = None,
+                        ans_ai = ansawer,
+                        gen_time = datetime.now(),
+                        solution = solution, 
+                        submit_time = None,
+                        status = 0,
+                    )
+                    session.add(question)
+                assignment.status = 1
+                assignment.total = len(data)
+            session.commit()
+        
 
     def pre_gen_weekly_assignments(self):
         """

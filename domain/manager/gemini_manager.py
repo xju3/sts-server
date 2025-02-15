@@ -27,9 +27,12 @@ logger = logging.getLogger()
 review_manager = ReviewManager()
 account_manager = AccountManager()
 llm = GeminiLLM(GeminiModel.GEMINI_2_0_FLASH)
-agent = AssignmentAgent(llm.gemini)
+agent = AssignmentAgent()
 
 class GeminiManager:
+
+    def assignment(self,grade, subject, points):
+        return agent.gen_assignment(llm=llm.gemini, grade=grade, subject=subject, points=points)
 
     def review(self, student_id: str, request_id: str, files: List[str]):
         """ review assignments and save the results to database"""
@@ -41,7 +44,7 @@ class GeminiManager:
         self.download_files(local_path, files)
         logger.debug(f"文件下载完成: {local_path}")
         start_time = datetime.now()
-        review_info = agent.check_assignments_gemini(directory=local_path)
+        review_info = agent.check_assignments_gemini(llm=llm.gemini_multi_modal, directory=local_path)
         if review_info is None:
             return
         end_time = datetime.now()

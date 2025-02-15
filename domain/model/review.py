@@ -55,13 +55,17 @@ class Assignment(Base):
 
 class Question(Base):
     __tablename__ = "question"
-    assignment_id: Mapped[str] = mapped_column( nullable=True,)
-    title: Mapped[str] = mapped_column(nullable=True,)
+    no: Mapped[str] = mapped_column(nullable=True,)
+    question: Mapped[str] = mapped_column(nullable=True,)
+    points: Mapped[str] = mapped_column(nullable=True,)
     options: Mapped[str] = mapped_column(nullable=True,)
     ans_student: Mapped[str] = mapped_column(nullable=True,)
-    ai_student: Mapped[str] = mapped_column(nullable=True,)
+    ans_ai: Mapped[str] = mapped_column(nullable=True,)
+    solution: Mapped[str] = mapped_column(nullable=True,)
     gen_time: Mapped[datetime] = mapped_column(nullable=True,)
     submit_time: Mapped[datetime] = mapped_column(nullable=True,)
+    status: Mapped[int] = mapped_column(nullable=True,)
+    assignment_id: Mapped[str] = mapped_column( nullable=True,)
     
 
 

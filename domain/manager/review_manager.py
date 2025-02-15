@@ -121,17 +121,17 @@ class ReviewManager:
                     
                 # 处理每个错误详情
                 for detail in details:
-                    if detail.knowledge and detail.subject:
+                    if detail.knowledge and review.subject:
                         # 初始化该学科的知识点集合（如果还没有）
-                        if detail.subject not in results[request.student_id]:
-                            results[request.student_id][detail.subject] = set()
+                        if review.subject not in results[request.student_id]:
+                            results[request.student_id][review.subject] = set()
                         
                         # 添加该学科的错误知识点
                         points = detail.knowledge.split(',')
                         for point in points:
                             point = point.strip()
                             if point:
-                                results[request.student_id][detail.subject].add(point)
+                                results[request.student_id][review.subject].add(point)
         
         # 转换结果格式
         formatted_results = []

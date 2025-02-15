@@ -55,6 +55,16 @@ def get_date_from_week_id(year_id: int, week_id: int):
 
 
 
+
+def dict_2_str(dict_data, seperator):
+    """
+    将字典数据转换为字符串，格式为 key=value, key=value
+    """
+    if dict_data is None:
+        return ""
+    return ",".join([f"{key}{seperator}{value}" for key, value in dict_data.items()])
+
+
 def get_week_dates(delta: int):
     """
     获取指定周的起始日期和结束日期（以周日为一周的开始）

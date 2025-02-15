@@ -1,11 +1,13 @@
 from llama_index.core import SimpleDirectoryReader
 from llama_index.core.program import MultiModalLLMCompletionProgram
+from llama_index.llms.gemini import Gemini
 from llama_index.core.output_parsers import PydanticOutputParser
 from ai.agent.agent import AiReviewInfo
+from llama_index.multi_modal_llms.gemini import GeminiMultiModal
+from llama_index.core import PromptTemplate
 
 
-
-prompt_template_str = """\
+prompt_template_review = """\
             please response in Chinese. \
             You are a talented teacher who diligently reviews students' homework every day, \
             providing a comprehensive summary and offering constructive suggestion to help them improve their scores in the curriculum. \
@@ -54,17 +56,44 @@ prompt_template_str = """\
             problems: 是每一道题经过你检查后产生的数据列表
         """
 
+
+prompt_template_assignment = """\
+    您是一位{grade}年级{subject}老师，\
+        您给学生布置的家庭作业中，某个学生在这些{knowledge_points}知识点上出了错，\
+        你需要生成与出错知识点两倍数量的练习题，供此学生巩固他们还没有掌握的知识, 要求如下: \
+    1. 至少包含两个出错知识点 \
+    2. 题目为选择题，提供4个答案，只有一个答案是正确的, 这个选项合并成一个字符串，中间用Comma与换行符隔开 \
+    3. 如果是科学类的学科，题目的内容需要以现实生活中的{subject}现象为基础 \
+       3.1. 题目难度分三级: 简单、中等与困难 \
+       3.2. 简单的题目通常不需要多步骤的计算 \
+       3.2. 中等难度题目需要学生进行2-3步的步骤计算 \
+       3.4. 困难等级的题目通常需要3步以上的计算步骤 \
+       3.5. 简单与困难的题目各占20%， 剩下的为中等难度题目
+    4. 如果是文科类的题目，目前我没有明确的规则，具体内容由你决定. \
+    5. 以下面Json格式输出:
+    {
+        "no": 题目编号
+        "question": 问题
+        "options" : 答案选项
+        "level" : 题目难度
+        "solution": 解题说明
+        "points": 本题目用到的知识点，返回用逗号(comma)隔开的字串
+        "ans" 答案，只需要你提供的答案选项的代号, 如A
+     }
+     6. 结果不需要markdown样式，直接是json数据
+     7. Reponse in Chinese
+"""
 class AssignmentAgent:
-    """send images to ai for reviewing student's assignments."""
-    
-    def __init__(self, llm) -> None:
-        self.llm = llm
 
+    def gen_assignment(self, llm: Gemini, grade, subject, points):
+        template = PromptTemplate(prompt_template_assignment)
+        prompt = template.format(grade=grade, subject=subject,knowledge_points=points)
+        return llm.complete(prompt=prompt)
 
-    def gen_assignment(points):
-        pass
-
-    def check_assignments_gemini(self, directory : str) -> AiReviewInfo:
+    def check_assignments_gemini(self, llm :GeminiMultiModal,  directory : str) -> AiReviewInfo:
+        """
+            功能: 检查学生作业
+        """
         # read files from directory
         images = SimpleDirectoryReader(directory).load_data()
         if images is None or len(images) == 0: 
@@ -73,8 +102,8 @@ class AssignmentAgent:
         mm_program = MultiModalLLMCompletionProgram.from_defaults(
             output_parser=PydanticOutputParser(AiReviewInfo),
             image_documents=images,
-            prompt_template_str=prompt_template_str,
-            multi_modal_llm=self.llm,
+            prompt_template_str=prompt_template_review,
+            multi_modal_llm=llm,
             verbose=True,
         )
 

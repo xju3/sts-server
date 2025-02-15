@@ -1,4 +1,5 @@
 from llama_index.multi_modal_llms.gemini import GeminiMultiModal
+from llama_index.llms.gemini import Gemini
 from llama_index.core.program import MultiModalLLMCompletionProgram
 from llama_index.core.output_parsers import PydanticOutputParser
 from llama_index.core import SimpleDirectoryReader
@@ -15,15 +16,17 @@ class GeminiModel(StrEnum):
 
 class GeminiLLM():
 
+    gemini_multi_modal = None
     gemini = None
 
     def __init__(self, model: GeminiModel) -> None:
         load_dotenv()
         self.api_key = os.getenv("GEMINI_API_KEY")
-        self.gemini = GeminiMultiModal(
+        self.gemini_multi_modal = GeminiMultiModal(
             model=model,
             api_key=self.api_key,  # uses GOOGLE_API_KEY env var by default
         )
+        self.gemini = Gemini(api_key=self.api_key, model= model)
 
     def chat(self, content):
        return self.llm.complete(content)
@@ -45,7 +48,7 @@ class GeminiLLM():
             output_parser=PydanticOutputParser(output_class),
             image_documents=image_documents,
             prompt_template_str=prompt_template_str,
-            multi_modal_llm=self.gemini,
+            multi_modal_llm=self.gemini_multi_modal,
             verbose=True,
         )
         response = llm_program()
@@ -62,7 +65,7 @@ class GeminiLLM():
             output_parser=PydanticOutputParser(HandwritingText),
             image_documents=images,
             prompt_template_str=prompt_template_str,
-            multi_modal_llm=self.gemini,)
+            multi_modal_llm=self.gemini_multi_modal,)
         resp = llm_program()
         print(resp)
     
