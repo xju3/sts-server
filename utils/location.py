@@ -13,6 +13,17 @@ API_KEY = os.getenv("BAIDU_MAP_AK")
 SECRET_KEY = os.getenv("BAIDU_MAP_SK")
 
 def get_baidu_signed_url(latitude, longitude, radius):
+    """
+    返回经过签名的百度地址
+
+    Args:
+        latitude
+        longitude
+        radius
+    
+    Returns:
+        url string
+    """
     parameters = f"/place/v2/search?query=学校&location={latitude},{longitude}&radius={radius * 1000}&output=json&ak={API_KEY}"
     encodedStr = urllib.parse.quote(parameters, safe="/:=&?#+!$,;'@()*[]")
     rawStr = encodedStr + SECRET_KEY

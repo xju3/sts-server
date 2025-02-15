@@ -2,7 +2,7 @@
 from typing import List
 from domain.manager.review_manager import ReviewManager
 from domain.manager.account_manager import AccountManager
-from domain.manager.notification_manager import send_notification
+from utils.notification import send_notification
 from domain.engine import engine
 from sqlalchemy.orm import sessionmaker
 from ai.llm.gemini import GeminiLLM, GeminiModel
@@ -19,7 +19,8 @@ LOCAL_IMAGE_ROOT_DIR = os.getenv("IMAGE_TMP_DIR")
 MINIO_END_POINT=os.getenv("MINIO_END_POINT")
 MINIO_URL = f'http://{MINIO_END_POINT}/assignments/'
 
-logging.basicConfig(level=logging.DEBUG, stream=sys.stdout, filename='gemini_manager.log')
+logging.basicConfig()
+# logging.basicConfig(level=logging.DEBUG, stream=sys.stdout, filename='gemini_manager.log')
 logger = logging.getLogger()
 
 

@@ -23,3 +23,4 @@ eventlet
 minio
 gunicorn
 jpush
+flask_apscheduler

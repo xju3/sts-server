@@ -49,6 +49,7 @@ class Parent(Base):
     account_id: Mapped[str] = mapped_column(nullable=True,)
     account_name: Mapped[str] = mapped_column(nullable=True, unique=True)
     password: Mapped[str] = mapped_column(nullable=True,)
+    role: Mapped[str] = mapped_column(nullable=True,)
     notification_id: Mapped[str] = mapped_column(nullable=True)
     device_id: Mapped[str] = mapped_column(nullable=True)
 

@@ -60,6 +60,10 @@ class AssignmentAgent:
     def __init__(self, llm) -> None:
         self.llm = llm
 
+
+    def gen_assignment(points):
+        pass
+
     def check_assignments_gemini(self, directory : str) -> AiReviewInfo:
         # read files from directory
         images = SimpleDirectoryReader(directory).load_data()

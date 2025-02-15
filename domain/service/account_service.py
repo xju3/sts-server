@@ -6,9 +6,9 @@ from datetime import datetime
 from domain.engine import engine
 from domain.model.common import generate_uuid
 from domain.manager.account_manager import AccountManager
-from domain.manager.location_manager import baidu_get_schools_nearby
+from utils.location import baidu_get_schools_nearby
 from routers.model.output import AccountInfo_O, StudentInfo_O, Parent_O
-from routers.model.input import Registration_I, LoginHistory_I
+from routers.model.input import Registration_I, LoginHistory_I, Parent_I, Student_I
 import uuid
 
 account_manager = AccountManager()
@@ -76,7 +76,8 @@ class AccountService:
             person = account_manager.get_person_by_id(student.person_id)
             info = StudentInfo_O(id=student.id, 
                                name=person.full_name, 
-                               school=student.school_name, 
+                               schoolId=student.school_id,
+                               schoolName=student.school_name, 
                                grade=student.grade, accountId=student.account_id )
             students.append(info) 
         return AccountInfo_O(parent_o, students=students)
@@ -112,3 +113,31 @@ class AccountService:
             except Exception as e: 
                 print(e)
         return results
+
+    def add_parent(self, account_id, p: Parent_I):
+        person_id = generate_uuid()
+        person = Person(id= person_id, full_name=p.name)
+        parent = Parent(person_id=person_id, 
+                        account_id=account_id, 
+                        account_name=p.account_name, 
+                        role = p.role, 
+                        password= p.password)
+        Session = sessionmaker(autocommit=False, autoflush=False, bind=engine) 
+        with Session() as session:
+            session.add(person)
+            session.add(parent)
+            session.commit()
+        
+    def add_student(self, account_id, s : Student_I):
+        person_id = generate_uuid()
+        person = Person(id= person_id, full_name=s.name)
+        student = Student(person_id=person_id, 
+                         account_id=account_id, 
+                         school_id=s.school_id, 
+                         school_name=s.school_name,
+                         grade=s.grade)
+        Session = sessionmaker(autocommit=False, autoflush=False, bind=engine) 
+        with Session() as session:
+            session.add(person)
+            session.add(student)
+            session.commit()

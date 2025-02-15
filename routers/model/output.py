@@ -51,7 +51,8 @@ class SingleValue_O(JSONWizard):
 class StudentInfo_O(JSONWizard):
     id: str | None
     name: str | None
-    school: str | None
+    schoolId: str | None
+    schoolName: str | None
     grade: int | None
     accountId: str | None 
 
@@ -86,6 +87,7 @@ class ReviewDetailInfo_O(JSONWizard):
     solution: str | None
     knowledge: str | None
     suggestion: str | None
+    err: int | None
 
 
 @dataclass

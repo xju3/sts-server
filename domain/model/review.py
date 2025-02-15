@@ -39,4 +39,29 @@ class ReviewDetail(Base):
     solution: Mapped[str] = mapped_column(nullable=True,)
     knowledge: Mapped[str] = mapped_column(nullable=True,)
     suggestion: Mapped[str] = mapped_column(nullable=True,)
+    err: Mapped[int] = mapped_column(nullable=True,)
+
+
+class Assignment(Base):
+    __tablename__ = "assignment"
+    student_id: Mapped[str] = mapped_column(nullable=True,)
+    subject: Mapped[str] = mapped_column(nullable=True,)
+    points: Mapped[str] = mapped_column(nullable=True,)
+    year_id: Mapped[int] = mapped_column(nullable=True,)
+    week_id: Mapped[int] = mapped_column(nullable=True,)
+    total : Mapped[int] = mapped_column(nullable=True,)
+    correct: Mapped[int] = mapped_column(nullable=True,)
+    status: Mapped[int] = mapped_column(nullable=True,)
+
+class Question(Base):
+    __tablename__ = "question"
+    assignment_id: Mapped[str] = mapped_column( nullable=True,)
+    title: Mapped[str] = mapped_column(nullable=True,)
+    options: Mapped[str] = mapped_column(nullable=True,)
+    ans_student: Mapped[str] = mapped_column(nullable=True,)
+    ai_student: Mapped[str] = mapped_column(nullable=True,)
+    gen_time: Mapped[datetime] = mapped_column(nullable=True,)
+    submit_time: Mapped[datetime] = mapped_column(nullable=True,)
+    
+
 

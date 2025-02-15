@@ -1,9 +1,7 @@
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 from sqlalchemy.orm import Mapped
-import uuid
+from utils.common import generate_uuid
 
-def generate_uuid():
-    return str(uuid.uuid1())
 
 
 class PushMessage:

@@ -1,13 +1,17 @@
 
-from domain.model.review import ReviewRequest
+from domain.model.review import ReviewRequest, ReviewDetail, Assignment
 from sqlalchemy.orm import sessionmaker
+from utils.common import get_week_ids 
+from ai.agent.assignment import AssignmentAgent
 from domain.engine import engine 
+from domain.manager.task.queue import QueueTaskManager, GenerationTask, TaskStatus
 from domain.manager.review_manager import ReviewManager
 from domain.manager.gemini_manager import GeminiManager
-from domain.manager.minio_manager import get_minio_files, get_minio_file_url
+from utils.minio import get_minio_files, get_minio_file_url
 from routers.model.output import ReviewInfo_O, ReviewDetailInfo_O, ReviewRequest_O
 from typing import List
 import logging, sys
+import time
 import threading
 
 logging.basicConfig(level=logging.DEBUG, stream=sys.stdout)
@@ -15,15 +19,17 @@ logger = logging.getLogger()
 review_manager = ReviewManager()
 gemini_manager = GeminiManager()
 
+
+
 class ReviewService:
 
-    def get_request_by_id(request_id):
+    def get_request_by_id(self, request_id):
         request = review_manager.get_request_by_id(request_id=request_id)
         if request is None:
             return {}
         return ReviewRequest_O(id=request_id, images=request.images, studentId=request.student_id)
 
-    def get_request_origin_images(request_id) -> List[str]:
+    def get_request_images(self,request_id) -> List[str]:
         request = review_manager.get_request_by_id(request_id=request_id)
         if request is None:
             return []
@@ -54,8 +60,14 @@ class ReviewService:
     def get_student_review_requests(self, student_id):
         return review_manager.get_student_review_requests(student_id)
     
-    def get_ai_review_list(self, student_id) -> List[ReviewInfo_O]:
-        requests = review_manager.get_student_review_requests(student_id)
+    def set_ai_review_err(self, detail_id):
+        Session = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+        with Session() as session:
+            session.query(ReviewDetail).filter(ReviewDetail.id == detail_id).update({"err": 1})
+            session.commit()
+    
+    def get_ai_review_list(self, student_id, date) -> List[ReviewInfo_O]:
+        requests = review_manager.get_student_review_requests(student_id, date)
         if len(requests) == 0:
             return []
         
@@ -77,6 +89,9 @@ class ReviewService:
         return results
 
     def get_review_details(self, ai_review_id) -> List[ReviewDetailInfo_O]: 
+        """
+            获取AI_REVIEW_ID下的题目列表
+        """
         details = []
         list = review_manager.get_ai_review_details(ai_review_id)
         for item in list:
@@ -86,7 +101,72 @@ class ReviewService:
                                         options=item.options,
                                         no=item.no, ansAi=item.ans_ai, 
                                         ansStudent=item.ans_student, 
+                                        err=item.err,
                                         conclusion=item.conclusion, solution=item.solution, 
                                         knowledge=item.knowledge, suggestion=item.suggestion)
             details.append(detail)
         return details
+    
+    def gen_weekly_assignments(self):
+        generator = QueueTaskManager()
+        year_id, week_id = get_week_ids(0)
+        Session = sessionmaker(engine)
+        task_ids = []
+        with Session() as session:
+            list = session.query(Assignment).filter(Assignment.year_id == year_id, Assignment.week_id == week_id).all()
+            for item in list:
+                # 异步方式（使用回调）
+                task_id = generator.add_generation_task(
+                    subject=item.subject,
+                    student_id=item.student_id,
+                    knowledge_points=item.points.split(","),
+                    callback=self.handle_task_result  # 使用回调函数
+                )
+                task_ids.append(task_id)
+                print(f"Async task started: {task_id}")
+        generator.start_worker()
+    # 使用示例
+    def handle_task_result(self, task: GenerationTask):
+        """处理任务结果的回调函数"""
+        if task.status == TaskStatus.COMPLETED:
+            print(f"Task {task.task_id} completed successfully!")
+        else:
+            print(f"Task {task.task_id} failed: {task.error_message}")
+
+
+    def pre_gen_weekly_assignments(self):
+        """
+            预生成周练习题目任务, 在没有生成题目前，不向用户开放.
+        """
+        year_id, week_id = get_week_ids(0)
+        knowledge_points = review_manager.get_failed_knowledge_points(year_id=year_id, week_id=week_id)
+        if len(knowledge_points) == 0:
+           return
+
+        Session = sessionmaker(engine)
+        with Session() as session:
+            for item in knowledge_points:
+                student_id = item ['student_id']
+                subjects = item ['subjects']
+                self.create_assignment(session=session, 
+                                       student_id=student_id, 
+                                       subjects=subjects, 
+                                       year_id=year_id, week_id=week_id )
+            session.commit()
+                
+    
+    def create_assignment(self,session, student_id, subjects, year_id, week_id):
+        for subject in subjects:
+            points = subject['knowledge_points']
+            points = ','.join(points)
+            name = subject['subject']
+            assignment = Assignment(subject=name, student_id=student_id,
+                                    year_id= year_id, week_id=week_id, 
+                                    status = 0, 
+                                    correct = 0,
+                                    total=0, points=points)
+            session.add(assignment)
+            
+
+
+         

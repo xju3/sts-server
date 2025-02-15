@@ -1,6 +1,6 @@
 
 from flask import Blueprint, request
-from domain.manager.minio_manager import gen_minio_access_key 
+from utils.minio import gen_minio_access_key 
 from routers.model.output import SingleValue_O
 from routers.common import success
 minio_router = Blueprint('minio_router', __name__)
