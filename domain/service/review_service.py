@@ -111,6 +111,9 @@ class ReviewService:
         return details
     
     def gen_weekly_assignments(self):
+        """
+            执行定时任务，按周生成练习题
+        """
         year_id, week_id = get_week_ids(0)
         Session = sessionmaker(engine)
         with Session() as session:
@@ -124,12 +127,14 @@ class ReviewService:
                 val = gemini_manager.assignment(student.grade, assignment.subject, assignment.points)
                 val = val.text.replace("```json", "").replace("```", "")
                 data = json.loads(val)
+                questions = []
                 for item in data:
                     no = item.get('no', '')
                     question = item.get('question', '')
                     options = item.get('options', '')
                     ansawer = item.get('ans', '')
                     points = item.get('points', '')
+                    level = item.get('level', 0)
                     solution = item.get('solution', '')
                     question = Question(
                         assignment_id = assignment.id,
@@ -139,14 +144,22 @@ class ReviewService:
                         options = options,
                         ans_student = None,
                         ans_ai = ansawer,
+                        level = level,
                         gen_time = datetime.now(),
                         solution = solution, 
                         submit_time = None,
                         status = 0,
                     )
-                    session.add(question)
+                    questions.append(question)
+                easy_count = len([q for q in questions if q.level == 1])
+                assignment.easy = easy_count
+                medium_count = len([q for q in questions if q.level == 2])
+                assignment.medium = medium_count
+                hard_count = len([q for q in questions if q.level == 3])
+                assignment.hard = hard_count
                 assignment.status = 1
                 assignment.total = len(data)
+                session.add_all(questions)
             session.commit()
         
 
@@ -182,6 +195,50 @@ class ReviewService:
                                     correct = 0,
                                     total=0, points=points)
             session.add(assignment)
+
+    def get_assignments(self, student_id, year_id, week_id):
+        list = review_manager.get_assignments(student_id, year_id, week_id)
+        result = []
+        for item in list:
+            result.append({
+                'id': item.id,
+                'studentId': item.student_id,
+                'subject': item.subject,
+                'points': item.points,
+                'yearId': item.year_id,
+                'weekId': item.week_id,
+                'easy': item.easy,
+                'medium': item.medium,
+                'hard': item.hard,
+                'total': item.total,
+                'correct': item.correct,
+                'status': item.status
+            })
+        return result
+
+    
+    def get_questions(self, assignment_id):
+        list = review_manager.get_questions(assignment_id=assignment_id)
+        result = []
+        
+        for item in list:
+            result.append({
+                'id': item.id,
+                'no': item.no,
+                'question': item.question,
+                'points': item.points,
+                'level': item.level,
+                'options': item.options,
+                'student': item.ans_student,
+                'ai': item.ans_ai,
+                'solution': item.solution,
+                'gen_time': item.gen_time,
+                'submitTime': item.submit_time,
+                'status': item.status,
+                'assignmentId': item.assignment_id
+            })
+        return result
+        
             
 
 

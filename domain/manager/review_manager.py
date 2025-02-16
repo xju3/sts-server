@@ -1,7 +1,8 @@
 
 from utils.common import get_date_from_week_id
-from domain.model.review import ReviewAI, ReviewRequest, ReviewDetail
+from domain.model.review import ReviewAI, ReviewRequest, ReviewDetail, Assignment, Question
 from domain.engine import SessionLocal
+from datetime import datetime, timedelta
 from utils.common import generate_uuid
 from ai.agent.agent import AiReviewInfo
 from sqlalchemy import desc
@@ -11,9 +12,19 @@ from typing import List
 
 class ReviewManager:
 
+    def get_assignments(self, student_id, year_id, week_id) -> List[Assignment]:
+        with SessionLocal() as session:
+            return session.query(Assignment).filter(Assignment.student_id == student_id, 
+                                                    Assignment.year_id == year_id,
+                                                    Assignment.week_id == week_id, 
+                                                    Assignment.status == 1).all()
+
+    def get_questions(self, assignment_id) -> List[Assignment]:
+        with SessionLocal() as session:
+            return session.query(Question).filter(Question.assignment_id== assignment_id).order_by(Question.no).all()
+
     def get_student_review_requests(self, student_id: str, date : str) -> List[ReviewRequest]:
 
-        from datetime import datetime, timedelta
         today = datetime.strptime(date, '%Y-%m-%d')
         next_day = today + timedelta(days=1)
         

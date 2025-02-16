@@ -49,15 +49,19 @@ class Assignment(Base):
     points: Mapped[str] = mapped_column(nullable=True,)
     year_id: Mapped[int] = mapped_column(nullable=True,)
     week_id: Mapped[int] = mapped_column(nullable=True,)
+    easy: Mapped[int] = mapped_column(nullable=True,)
+    medium: Mapped[int] = mapped_column(nullable=True,)
+    hard: Mapped[int] = mapped_column(nullable=True,)
     total : Mapped[int] = mapped_column(nullable=True,)
     correct: Mapped[int] = mapped_column(nullable=True,)
     status: Mapped[int] = mapped_column(nullable=True,)
 
 class Question(Base):
     __tablename__ = "question"
-    no: Mapped[str] = mapped_column(nullable=True,)
+    no: Mapped[int] = mapped_column(nullable=True,)
     question: Mapped[str] = mapped_column(nullable=True,)
     points: Mapped[str] = mapped_column(nullable=True,)
+    level: Mapped[int] = mapped_column(nullable=True,)
     options: Mapped[str] = mapped_column(nullable=True,)
     ans_student: Mapped[str] = mapped_column(nullable=True,)
     ans_ai: Mapped[str] = mapped_column(nullable=True,)

@@ -58,24 +58,24 @@ prompt_template_review = """\
 
 
 prompt_template_assignment = """\
+    知识点列表: {knowledge_points}
     您是一位{grade}年级{subject}老师，\
-        您给学生布置的家庭作业中，某个学生在这些{knowledge_points}知识点上出了错，\
-        你需要生成与出错知识点两倍数量的练习题，供此学生巩固他们还没有掌握的知识, 要求如下: \
-    1. 至少包含两个出错知识点 \
-    2. 题目为选择题，提供4个答案，只有一个答案是正确的, 这个选项合并成一个字符串，中间用Comma与换行符隔开 \
-    3. 如果是科学类的学科，题目的内容需要以现实生活中的{subject}现象为基础 \
-       3.1. 题目难度分三级: 简单、中等与困难 \
-       3.2. 简单的题目通常不需要多步骤的计算 \
-       3.2. 中等难度题目需要学生进行2-3步的步骤计算 \
-       3.4. 困难等级的题目通常需要3步以上的计算步骤 \
-       3.5. 简单与困难的题目各占20%， 剩下的为中等难度题目
+        您给学生布置的家庭作业中，某个学生在这些知识点上出了错，\
+        你需要生成与出错知识点两倍数量的练习题，供此学生巩固他们还没有掌握的知识,要求如下: \
+    1. 题目为选择题,提供4个答案,只有一个答案是正确的, 这个选项合并成一个字符串,中间用Comma与换行符隔开 \
+    2. 如果是科学类的学科，题目的内容需要以现实生活中的{subject}现象为基础 \
+       2.1. 题目难度分三级: 简单、中等与困难 \
+       2.2. 简单只包含一个知识点，题目通常不需要多步骤的计算 \
+       2.2. 如果知识点大于1个,中等难度需要包含两个知识点,需要学生进行2-3步的步骤计算 \
+       2.4. 困难等级的题目可以使用大于等于2个知识点,通常需要3步以上的计算步骤 \
+       2.5. 简单与困难的题目各占20%,剩下的为中等难度题目
     4. 如果是文科类的题目，目前我没有明确的规则，具体内容由你决定. \
     5. 以下面Json格式输出:
     {
         "no": 题目编号
         "question": 问题
         "options" : 答案选项
-        "level" : 题目难度
+        "level" : 题目难度, easy用1表示， medium用2表示， hard用3表示
         "solution": 解题说明
         "points": 本题目用到的知识点，返回用逗号(comma)隔开的字串
         "ans" 答案，只需要你提供的答案选项的代号, 如A
@@ -87,7 +87,7 @@ class AssignmentAgent:
 
     def gen_assignment(self, llm: Gemini, grade, subject, points):
         template = PromptTemplate(prompt_template_assignment)
-        prompt = template.format(grade=grade, subject=subject,knowledge_points=points)
+        prompt = template.format(grade=grade, subject=subject,knowledge_points=points.split(","))
         return llm.complete(prompt=prompt)
 
     def check_assignments_gemini(self, llm :GeminiMultiModal,  directory : str) -> AiReviewInfo:

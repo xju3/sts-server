@@ -1,4 +1,5 @@
 from flask import Blueprint, request
+import json
 from routers.common import success
 from domain.service.review_service import ReviewService
 
@@ -45,3 +46,16 @@ def set_ai_review_err(detail_id):
 def get_ai_review_details(ai_review_id):
     data = review_service.get_review_details(ai_review_id)
     return success(data)
+
+@review_router.get('/review/assignments/<student_id>/<year_id>/<week_id>')
+def get_assignments(student_id, year_id, week_id):
+    data = review_service.get_assignments(student_id=student_id, year_id=year_id, week_id=week_id)
+    return success(data)
+
+@review_router.get('/review/questions/<assignment_id>')
+def get_questions(assignment_id):
+    data = review_service.get_questions(assignment_id=assignment_id)
+    return success(data)
+
+
+
