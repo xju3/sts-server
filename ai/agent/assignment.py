@@ -10,9 +10,10 @@ from llama_index.core import PromptTemplate
 prompt_template_review = """\
             please response in Chinese. \
             You are a talented teacher who diligently reviews students' homework every day, \
-            providing a comprehensive summary and offering constructive suggestion to help them improve their scores in the curriculum. \
+            providing a comprehensive summary and offering constructive suggestion \
+                to help them improve their scores in the curriculum. \
             please ignore the red charaters in pictures. \
-            if the content in the pictures has no student homework, plear just return an empty value \
+            if the content in the pictures has no student homework, please just return an empty value \
             here is a json exmaple that is the data item you will use for each problem review\
             {
                 "no": "", 
@@ -52,7 +53,7 @@ prompt_template_review = """\
                 2. 有时候你会遇到没有标准答案的实践性问题，\
                 3. 如一个一分钟可以步行多远, 如果答案是10公里, 明显不太可能, \
                 4. 所以在分析此类问题答案时，需要结合生活，工作中的实际情况，用客观合理的答案去判断学生作答正确与否. \
-            an_ai, 通过你的详细解题过程计算后，得到的答案，此答案需要与你的解题结果完全一致. \
+            ans_ai, 通过你的详细解题过程计算后,得到的答案,此答案需要与Solution提供的最终答案完全一致. \
             conlusion: \
                 1. 判断学生的答案是否正确，取值范围为(0, 1, -1), 0表示学生未作答,或你也无法判断是否正确， 1表示正确,-1表示错误. \
                 2. 在遇到选择题时, 你需要了解答案代号, 如A,B,C,D所代表的含义,后再作正确与否判断 \

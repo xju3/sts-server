@@ -7,6 +7,7 @@ from routers.account import account_router
 from routers.review import review_router
 from flask_apscheduler import APScheduler
 from domain.service.review_service import ReviewService
+import logging
 
 from logging.config import dictConfig
 
@@ -26,6 +27,7 @@ dictConfig({
     }
 })
 
+
 # Create Flask app
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.urandom(24)
@@ -33,6 +35,10 @@ app.register_blueprint(index_router)
 app.register_blueprint(minio_router)
 app.register_blueprint(account_router)
 app.register_blueprint(review_router)
+
+logging.basicConfig(filename='flask.log', level=logging.DEBUG,
+                        format='%(asctime)s %(levelname)s: %(message)s [in %(pathname)s:%(lineno)d]')
+app.logger.setLevel(logging.DEBUG)
 
 # service = ReviewService()
 
@@ -46,7 +52,6 @@ app.register_blueprint(review_router)
 #                   trigger='cron', day_of_week='fri', hour=10, min=10)
 
 # scheduler.init_app(app)
-
 socketio = SocketIO(app, cors_allowed_origins="*")
 
 if __name__ == '__main__':
