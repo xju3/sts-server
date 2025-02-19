@@ -12,7 +12,8 @@ import os
 
 class GeminiModel(StrEnum):
     GEMINI_1_5_FLASH = 'models/gemini-1.5-flash',
-    GEMINI_2_0_FLASH = 'models/gemini-2.0-flash-exp',
+    GEMINI_2_0_FLASH = 'models/gemini-2.0-flash',
+    GEMINI_2_0_FLASH_EXP = 'models/gemini-2.0-flash-exp',
 
 class GeminiLLM():
 

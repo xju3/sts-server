@@ -5,14 +5,14 @@ from domain.model.account import Account
 from domain.service.review_service import ReviewService
 
 from dotenv import load_dotenv
-
-# Base.metadata.drop_all(engine)
-# Base.metadata.create_all(engine)
-
-
 load_dotenv()
 
+Base.metadata.drop_all(engine)
+Base.metadata.create_all(engine)
 
-service = ReviewService()
-service.gen_weekly_assignments()
+
+
+
+#service = ReviewService()
+#service.gen_weekly_assignments()
 # service.pre_gen_weekly_assignments()

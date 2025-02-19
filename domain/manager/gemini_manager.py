@@ -26,7 +26,7 @@ logger = logging.getLogger()
 
 review_manager = ReviewManager()
 account_manager = AccountManager()
-llm = GeminiLLM(GeminiModel.GEMINI_2_0_FLASH)
+llm = GeminiLLM(GeminiModel.GEMINI_2_0_FLASH_EXP)
 agent = AssignmentAgent()
 
 class GeminiManager:

@@ -12,6 +12,7 @@ class AiReviewProblem(BaseModel):
     """the response text which is returned by llm"""
     no: str | None
     question: str | None
+    chart: str | None
     options: List[str] | None
     ans_student: str | None
     ans_ai: str | None
@@ -22,12 +23,12 @@ class AiReviewProblem(BaseModel):
     suggestion: str | None
 
 class AiReviewInfo(BaseModel):
-    summary: str
-    problems: List[AiReviewProblem]
-    total: int
-    correct: int
-    incorrect: int
-    uncertain: int
+    summary: str | None
+    problems: List[AiReviewProblem] | None
+    total: int | None
+    correct: int | None
+    incorrect: int | None
+    uncertain: int | None
     subject: str | None
 
 class GoogleRestaurant(BaseModel):

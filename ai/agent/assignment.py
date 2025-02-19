@@ -12,10 +12,12 @@ prompt_template_review = """\
             You are a talented teacher who diligently reviews students' homework every day, \
             providing a comprehensive summary and offering constructive suggestion to help them improve their scores in the curriculum. \
             please ignore the red charaters in pictures. \
+            if the content in the pictures has no student homework, plear just return an empty value \
             here is a json exmaple that is the data item you will use for each problem review\
             {
                 "no": "", 
                 "question": "",
+                "chart": "",
                 "options": [],
                 "ans_student": "",
                 "ans_ai": "",
@@ -26,34 +28,60 @@ prompt_template_review = """\
                 "suggestion": "",
                 "level": 1
             }\
-            no, 是指题目的编号
-            question: 题目的内容
-            options: 如果是选择题目，需要将题目中提供可选项加到options中
-            ans_student, 指学生的答案, 一般情况下，学生答案为手写字体，在识别过程中需要注意其准确性
-            conlusion:
-                判断学生的答案是否正确，取值范围为(0, 1, -1), 0表示学生未作答，或你也无法判断是否正确， 1表示正确，-1表示错误.
-                在遇到选择题时，你需要了解答案代号，如A,B,C,D所代表的含义,后再作正确与否判断
-                学生的答案为手写字体，请仔细识别其内容，特别是对于最终答案的判断，如有些学生将最终答案写在"答"后面.
-            an_ai, 是你给出的答案.
-            reason，若学生答案错误，需要分析错误产生的原因
-            knowlege: 指本题涉及到的知识点，如果有多个知识点，用逗号隔开
-            solution: 你的详细解题过程，如果有推导过程，需要一步一步地推导出答案, 注意根据需要增加换行符
-            suggestion: 若学生作答错误，需要提醒学生的一些注意事项
-            level: 指题目难度，注意这个难度只是针对此其知识点构建的题目产生的难度，通常这些知识点会对应一定的年级，如小学3年级，中学8年级(初中2年级)前
-
-            有时候你会遇到没有标准答案的实践性问题，如一个一分钟可以步行多远，如果答案是10公里，明显不太可能，所以在分析此类问题答案时，需要结合生活，工作中的实际情况，用客观合理的答案去判断学生作答正确与否.
+            no, 是指题目的编号, 
+            question: 及其说明\
+                1. question是指题目的内容. \
+                2. 题目边上的图有两个作用， \
+                    2.1. 补充题目内容，即题目的部分内容是通过图进行描述的， 
+                    2.2. 对题目的内容进一步说明，\
+                    2.3. 如果是第一种情况，在解题过程一中需要结合图的题目才完整. \
+                    2.4. 示例，题目中提到了茄子，图片中正好也有对茄子的描述，那么此图应该与此题目关联。
+                3. 题干中通常就包含了多个问题，以括号的形式进行提问，或者留有空格供填空 \
+            chart: 若有关联图，请用TikZ描述图的内容，若无关联图，则将值设为'无' \
+            options: 如果是选择题目,需要将题目中提供可选项加到options中 \
+            ans_student: \
+                1. 指学生的答案 \
+                2. 对于填空题或选择题，通常答案包含在括号内. \
+                3. 简答题需要学生写出多个演算步骤，其答案可能散落在非即定位置，需要根据学生的计算过程去查找，
+                4. 学生的答案为手写字体，请仔细识别其内容，特别是对于最终答案的判断，如有些学生将最终答案写在"答"后面.\
+            reason:
+                1. 若学生答案错误,需要分析错误产生的简单原因,如计算错误,概念不清 \
+            knowlege: 指本题涉及到的知识点，如果有多个知识点，用英文逗号(comma)隔开
+            solution: 
+                1. 你的详细解题过程，如果有推导过程，需要一步一步地推导出答案, 注意根据需要增加换行符 \
+                2. 有时候你会遇到没有标准答案的实践性问题，\
+                3. 如一个一分钟可以步行多远, 如果答案是10公里, 明显不太可能, \
+                4. 所以在分析此类问题答案时，需要结合生活，工作中的实际情况，用客观合理的答案去判断学生作答正确与否. \
+            an_ai, 通过你的详细解题过程计算后，得到的答案，此答案需要与你的解题结果完全一致. \
+            conlusion: \
+                1. 判断学生的答案是否正确，取值范围为(0, 1, -1), 0表示学生未作答,或你也无法判断是否正确， 1表示正确,-1表示错误. \
+                2. 在遇到选择题时, 你需要了解答案代号, 如A,B,C,D所代表的含义,后再作正确与否判断 \
+            suggestion: 若学生作答错误，需要提醒学生的一些注意事项 \
+            level: \
+                1. 指题目难度，\
+                2. 注意这个难度只是针对此其知识点构建的题目产生的难度 \
+                3. 通常这些知识点会对应一定的年级,如小学3年级,中学8年级(初中2年级) \
+            最后，你需要对本次作业进行总结,json格式如下: \
             {
                 "subject": "",
                 "summary": "",
                 "startTime": "",
                 "endTime": "",
-                "problems": []
-            } 
-            startTime: 是你开始思考时间，要精确到秒
-            endTime: 是你完成思考时间,要精确到秒
-            summary: 你对本次作业完成情况的总结， 总结需要结合每道题目是否正确与建议，如果所有题目都对，不应该给出任何负面的总结.
+                "problems": [],
+                "total": 0,
+                "correct": 0,
+                "incorrect": 0,
+                "uncertain": 0,
+            } \
             subject: 指作业所属哪个科目，如语文，数学，历史，地理，政治，英语，物理，化学
-            problems: 是每一道题经过你检查后产生的数据列表
+            summary: 你对本次作业完成情况的总结， 总结需要结合每道题目是否正确与建议，如果所有题目都对，不应该给出任何负面的总结.
+            problems: 检查后产生题目列表
+            startTime: 是你开始思考时间，要精确到秒
+            endTime: 是你完成思考时间,要精确到秒,
+            total: 指题目总数
+            correct: 答对的题目总数
+            incorrect: 答错的题目总数
+            uncertain: 未作答的题目总数
         """
 
 
